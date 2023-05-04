@@ -1,0 +1,1 @@
+insert into uporabnik (uporabnisko_ime, geslo, ime, priimek, rojstvo, nacionalnost) values ('mihak', 'testnogeslo1', 'Miha', 'Kalan', '1999-05-31', 'SVN');
