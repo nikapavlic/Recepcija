@@ -1,1 +1,11 @@
 insert into uporabnik (uporabnisko_ime, geslo, ime, priimek, rojstvo, nacionalnost) values ('mihak', 'testnogeslo1', 'Miha', 'Kalan', '1999-05-31', 'SVN');
+INSERT INTO uporabnik (uporabnisko_ime, geslo, ime, priimek, rojstvo, nacionalnost) VALUES ('lkyvxdip', 'jRrxuA4xqj', 'Margo', 'Gennaro', '1978-10-20', 'WSM');
+INSERT INTO uporabnik (uporabnisko_ime, geslo, ime, priimek, rojstvo, nacionalnost) VALUES ('mfdljpun', '2pPbuceezs', 'Arthur', 'Scott', '1982-06-18', 'RUS');
+INSERT INTO uporabnik (uporabnisko_ime, geslo, ime, priimek, rojstvo, nacionalnost) VALUES ('uauxbnbz', 'YxvLbsnx8N', 'Ingeborg', 'Moore', '1995-03-11', 'BWA');
+INSERT INTO uporabnik (uporabnisko_ime, geslo, ime, priimek, rojstvo, nacionalnost) VALUES ('ldwpzdvo', 'PIS0jLRS2N', 'Tammy', 'Roberts', '2002-08-11', 'MLT');
+INSERT INTO uporabnik (uporabnisko_ime, geslo, ime, priimek, rojstvo, nacionalnost) VALUES ('xynqqcup', '0rlAOnWShL', 'Jean', 'Wang', '1987-09-29', 'MCO');
+INSERT INTO uporabnik (uporabnisko_ime, geslo, ime, priimek, rojstvo, nacionalnost) VALUES ('jmnvvklb', '0KeMHE00vf', 'James', 'Benford', '1969-08-09', 'TWN');
+INSERT INTO uporabnik (uporabnisko_ime, geslo, ime, priimek, rojstvo, nacionalnost) VALUES ('tsvpgqce', 'GDQT1pWt8b', 'John', 'Carone', '1967-10-12', 'MSR');
+INSERT INTO uporabnik (uporabnisko_ime, geslo, ime, priimek, rojstvo, nacionalnost) VALUES ('phavitrl', 'C9MkH8UCxo', 'Stephen', 'Poore', '1987-06-12', 'COD');
+INSERT INTO uporabnik (uporabnisko_ime, geslo, ime, priimek, rojstvo, nacionalnost) VALUES ('xfdlecwm', '3gLZlSxzPO', 'Alfred', 'Cohran', '1968-12-22', 'BHS');
+INSERT INTO uporabnik (uporabnisko_ime, geslo, ime, priimek, rojstvo, nacionalnost) VALUES ('mfnphwtx', 'OaDeunD51F', 'Katherine', 'Brown', '1980-02-06', 'PHL');
