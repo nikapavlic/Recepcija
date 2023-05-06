@@ -16,5 +16,6 @@ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO spelab WITH GRANT OPTION;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO javnost;
 
 -- dodatne pravice za uporabo aplikacije
---GRANT INSERT ON tabela TO javnost;
---GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO javnost;
+GRANT INSERT ON uporabnik TO javnost;
+GRANT INSERT ON rezervacije TO javnost;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO javnost;
