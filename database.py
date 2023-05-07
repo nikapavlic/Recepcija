@@ -82,7 +82,7 @@ class Repo:
 
     ####
 
-    def tabela_parcela(self, prvi_dan, st_dni, st_gostov) ->List[parcela]:
+    #def tabela_parcela(self, prvi_dan, st_dni, st_gostov) ->List[parcela]:
         # funkcija izpiše seznam vseh parcel, katere bi bile primerne za željeno rezervacijo = st_gostov & izbrane dni
 
         # zdruziti je treba tabelo rezervacij in tabelo parcel --> dobimo proste parcele
@@ -91,18 +91,12 @@ class Repo:
 
 
             # IDK?? 
-            self.cur.execute("""
-            SELECT * FROM parcele
-            WHERE NOT EXISTS(
-                SELECT 
-            )
-            WHERE st_gostov = %s """, (prvi_dan, st_dni, st_gostov))
+        #     self.cur.execute("""
+        #     SELECT * FROM parcele
+        #     WHERE NOT EXISTS(
+        #         SELECT 
+        #     )
+        #     WHERE st_gostov = %s """, (prvi_dan, st_dni, st_gostov))
 
 
-        return [parcela(id, st_gostov) for (id, st_gostov) in self.cur.fetchall()]
-
-
-
-
-        
-
+        # return [parcela(id, st_gostov) for (id, st_gostov) in self.cur.fetchall()]

@@ -1,0 +1,16 @@
+% rebase('base.html', naslov='Receptorji')
+
+    <table class="table table-striped">
+      <tr>
+        <th>EMŠO</th>
+        <th>Ime</th>
+        <th>Priimek</th>
+      </tr>
+      %for emso, ime, priimek in receptorji:
+      <tr>
+        <td>{{emso}}</td>
+        <td>{{ime}}</td>
+        <td>{{priimek}}</td>
+      </tr>
+      %end
+    </table>
