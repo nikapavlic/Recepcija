@@ -34,13 +34,13 @@ def index():
 # def index():
 #     redirect(url('izbira_uporabnika'))
 
-# @get('/receptorji')
-# def receptorji():
-#     cur.execute("""
-#         SELECT emso, ime, priimek
-#         FROM receptor
-#     """)
-#     return template('receptorji.html', receptorji=cur)
+@get('/receptorji')
+def receptorji():
+    cur.execute("""
+        SELECT emso, ime, priimek
+        FROM receptor
+    """)
+    return template('receptorji.html', receptorji=cur)
 
 # Način prijave:
 # @get('/izbira_uporabnika')
@@ -104,7 +104,11 @@ def prijava_gost_post():
 
 @get('/registracija')
 def registracija_get():
-    return template('registracija.html')
+    cur.execute("""
+        SELECT kratica, ime
+        FROM drzava
+    """)
+    return template('registracija.html', drzava = cur)
 
 @post('/registracija')
 def registracija_post():
@@ -114,7 +118,7 @@ def registracija_post():
     priimek = request.forms.priimek
     rojstvo = request.forms.rojstvo
     nacionalnost = request.forms.nacionalnost
-    
+
     uporabnik1=uporabnik(uporabnisko_ime=uporabnisko_ime, geslo=geslo, ime=ime, priimek=priimek, rojstvo=rojstvo, nacionalnost=nacionalnost)
     Repo.dodaj_uporabnik(uporabnik1)
     return 'Uspešna registracija'
