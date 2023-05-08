@@ -1,0 +1,26 @@
+% rebase('base.html', naslov='Dobrodošli v kampu _________!')
+
+<img src="/img/jezero.jpg" class="img-fluid" alt="jezero">
+
+<p>Osnovne informacije</p>
+
+<p>Za rezervacijo se je potrebno prijaviti.</p>
+
+
+<div style="position:fixed; top:480px">
+    <form action="{{url('prijava_gost_get')}}" method="GET">
+        <button class="btn btn-outline-danger" type="submit">Registracija za nove goste</button>
+    </form> 
+</div>
+
+<div style="position:fixed; top:525px">
+    <form action="{{url('prijava_gost_get')}}" method="GET">
+        <button class="btn btn-outline-dark" type="submit">Prijavi se kot gost</button>
+    </form>
+</div>
+
+<div style="position:fixed; top:570px">
+    <form action="{{url('prijava_receptor_get')}}" method="GET">
+        <button class="btn btn-outline-dark" type="submit">Prijavi se kot receptor</button>
+    </form>
+</div>
