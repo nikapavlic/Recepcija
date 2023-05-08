@@ -3,6 +3,7 @@
 
 # uvozimo bottle.py
 from bottleext import *
+from data.model import *
 from database import Repo
 
 # uvozimo ustrezne podatke za povezavo
@@ -18,6 +19,8 @@ import os
 SERVER_PORT = os.environ.get('BOTTLE_PORT', 8080)
 RELOADER = os.environ.get('BOTTLE_RELOADER', True)
 DB_PORT = os.environ.get('POSTGRES_PORT', 5432)
+
+Repo=Repo()
 
 #za debugiranje
 #debuger(True)
@@ -111,12 +114,9 @@ def registracija_post():
     priimek = request.forms.priimek
     rojstvo = request.forms.rojstvo
     nacionalnost = request.forms.nacionalnost
-    cur.execute("""
-            INSERT INTO uporabnik (uporabnisko_ime, geslo, ime, priimek, rojstvo, nacionalnost)
-              VALUES (%s, %s, %s, %s, %s, %s); """, (uporabnisko_ime, geslo,ime, priimek, rojstvo, nacionalnost))
-    conn.commit()
-    #uporabnik=uporabnik(0, uporabnisko_ime, geslo, ime, priimek, rojstvo, nacionalnost)
-    #Repo.dodaj_uporabnik(uporabnik = uporabnik)
+    
+    uporabnik1=uporabnik(uporabnisko_ime=uporabnisko_ime, geslo=geslo, ime=ime, priimek=priimek, rojstvo=rojstvo, nacionalnost=nacionalnost)
+    Repo.dodaj_uporabnik(uporabnik1)
     return 'Uspešna registracija'
 
 

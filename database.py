@@ -51,8 +51,7 @@ class Repo:
         #nov uporabnik
         self.cur.execute("""
             INSERT INTO uporabnik (uporabnisko_ime, geslo, ime, priimek, rojstvo, nacionalnost)
-              VALUES (%s, %s, %s, %s, %s, %s) RETURNING id; """, (uporabnik.uporabnisko_ime, uporabnik.geslo, uporabnik.ime, uporabnik.priimek, uporabnik.rojstvo, uporabnik.nacionalnost))
-        uporabnik.id = self.cur.fetchone()[0]
+              VALUES (%s, %s, %s, %s, %s, %s); """, (uporabnik.uporabnisko_ime, uporabnik.geslo, uporabnik.ime, uporabnik.priimek, uporabnik.rojstvo, uporabnik.nacionalnost))
         self.conn.commit()
         return uporabnik
     
@@ -74,8 +73,7 @@ class Repo:
 
         self.cur.execute("""
             INSERT INTO rezervacije (pricetek_bivanja, st_nocitev, odrasli, otroci, rezervirana_parcela, gost)
-              VALUES (%s, %s, %s, %s, %s, %s) RETURNING id; """, (rezervacije.pricetek_bivanja, rezervacije.st_nocitev, rezervacije.odrasli, rezervacije.otroci, rezervacije.rezervirana_parcela, rezervacije.gost))
-        rezervacije.id = self.cur.fetchone()[0]
+              VALUES (%s, %s, %s, %s, %s, %s); """, (rezervacije.pricetek_bivanja, rezervacije.st_nocitev, rezervacije.odrasli, rezervacije.otroci, rezervacije.rezervirana_parcela, rezervacije.gost))
         self.conn.commit()
         return rezervacije
     
