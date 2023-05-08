@@ -3,7 +3,7 @@
 
 # uvozimo bottle.py
 from bottleext import *
-from database import *
+from database import Repo
 
 # uvozimo ustrezne podatke za povezavo
 import data.auth as auth
@@ -99,6 +99,25 @@ def prijava_gost_post():
     return 'Uspešna gost prijava'
 
 
+@get('/registracija')
+def registracija_get():
+    return template('registracija.html')
+
+@post('/registracija')
+def registracija_post():
+    uporabnisko_ime = request.forms.uporabnisko_ime
+    geslo = request.forms.geslo
+    ime = request.forms.ime
+    priimek = request.forms.priimek
+    rojstvo = request.forms.rojstvo
+    nacionalnost = request.forms.nacionalnost
+    cur.execute("""
+            INSERT INTO uporabnik (uporabnisko_ime, geslo, ime, priimek, rojstvo, nacionalnost)
+              VALUES (%s, %s, %s, %s, %s, %s); """, (uporabnisko_ime, geslo,ime, priimek, rojstvo, nacionalnost))
+    conn.commit()
+    #uporabnik=uporabnik(0, uporabnisko_ime, geslo, ime, priimek, rojstvo, nacionalnost)
+    #Repo.dodaj_uporabnik(uporabnik = uporabnik)
+    return 'Uspešna registracija'
 
 
 
