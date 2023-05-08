@@ -1,0 +1,22 @@
+% rebase('base.html', naslov='Ustvari rezervacijo')
+
+<form action="{{url('ustvari_rezervacijo_post')}}" method="post" class="row-g3 mx-2">
+    <div class="col-4">
+        <label for="pricetek_bivanja" class="form-label my-3">Pričetek bivanja:</label>
+        <input id="pricetek_bivanja" name="pricetek_bivanja" type="text" class="form-control" />
+    </div>
+    <div class="col-4">
+        <label for="st_nocitev" class="form-label my-3">Število nočitev:</label>
+        <input id="st_nocitev" name="st_nocitev" type="integer" class="form-control" />
+    </div>
+    <div class="col-4">
+        <label for="odrasli" class="form-label my-3">Odrasli:</label>
+        <input id="odrasli" name="odrasli" type="integer" class="form-control" />
+    </div>
+    <div class="col-4">
+        <label for="otroci" class="form-label my-3">Otroci:</label>
+        <input id="otroci" name="otroci" type="integer" class="form-control" />
+    </div>
+    <div class="col-12 my-3 d-flex justify-content-start">
+        <button class="btn btn-outline-dark" type="submit">Najprej na izbiro parcele</button>
+    </div>

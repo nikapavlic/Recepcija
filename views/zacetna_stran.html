@@ -1,26 +1,61 @@
-% rebase('base.html', naslov='Dobrodošli v kampu _________!')
+% rebase('base.html', naslov='')
 
-<img src="/img/jezero.jpg" class="img-fluid" alt="jezero">
+    <div class="container">
+        <div class="jumbotron" >
+          <h1>Dobrodošli v kampu!</h1>
+        </div>
+         <div class="row"> 
+            <div class="d-grid gap-2 col8-9 mx-auto" style="align-items: center;">
+                <h2>Osnovne informacije</h2>
+                <p>Kamp se nahaja ob jezeru, kjer se je možno kopati.</p> 
+                <h3>Informativen izračun cene:</h3>
+                    <!-- <form action="{{url('registracija_post')}}" method="post" class="row-g3 mx-2"></form> -->
+                    <div class="col-6">
+                        <label for="st_nocitev" class="form-label my-3">Število nočitev:</label>
+                        <input id="st_nocitev" name="st_nocitev" type="integer" class="form-control" />
+                    </div>
+                    <div class="col-6">
+                        <label for="odrasli" class="form-label my-3">Število odraslih:</label>
+                        <input id="odrasli" name="odrasli" type="integer" class="form-control" />
+                    </div>
+                    <div class="col-6">
+                        <label for="otroci" class="form-label my-3">Število otrok:</label>
+                        <input id="otroci" name="otroci" type="integer" class="form-control" />
+                    </div>
+                
+                <div class="col-12 my-3 d-flex justify-content-start">
+                    <button class="btn btn-outline-dark" type="submit">Potrdi</button>
+                </div>
+            
+            </div>
+            <div class="d-grid gap-2 col-3 mx-auto" style="align-items: center;">
+                <p>V kolikor želite narediti rezervacijo se prijavite.</p>
+                <div>
+                    <form action="{{url('registracija_get')}}" method="GET">
+                        <button class="btn btn-outline-dark btn-block" style="margin-bottom: 5px;" type="submit">Registracija za nove goste</button>
+                    </form> 
+                </div>
 
-<p>Osnovne informacije</p>
+                <div>
+                    <form action="{{url('prijava_gost_get')}}" method="GET">
+                        <button class="btn btn-outline-dark btn-block" style="margin-bottom: 5px;" type="submit">Prijavi se kot gost</button>
+                    </form>
+                </div>
 
-<p>Za rezervacijo se je potrebno prijaviti.</p>
-
-
-<div style="position:fixed; top:480px">
-    <form action="{{url('registracija_get')}}" method="GET">
-        <button class="btn btn-outline-danger" type="submit">Registracija za nove goste</button>
-    </form> 
+                <div>
+                    <form action="{{url('prijava_receptor_get')}}" method="GET">
+                        <button class="btn btn-outline-dark brn-block col-12" type="submit">Prijavi se kot receptor</button>
+                    </form>
+                </div>
+        </div>
 </div>
 
-<div style="position:fixed; top:525px">
-    <form action="{{url('prijava_gost_get')}}" method="GET">
-        <button class="btn btn-outline-dark" type="submit">Prijavi se kot gost</button>
-    </form>
-</div>
+    </div> 
 
-<div style="position:fixed; top:570px">
-    <form action="{{url('prijava_receptor_get')}}" method="GET">
-        <button class="btn btn-outline-dark" type="submit">Prijavi se kot receptor</button>
-    </form>
-</div>
+<!-- <img src="/img/jezero.jpg" class="img-fluid" alt="jezero"> -->
+
+
+
+
+
+
