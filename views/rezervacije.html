@@ -1,0 +1,41 @@
+% rebase('base.html', naslov='Rezervacije')
+
+    <table class="table table-striped">
+      <tr>
+        <th>ID rezervacije</th>
+        <th>Pričetek bivanja</th>
+        <th>Število nočitev</th>
+        <th>Število odraslih</th>
+        <th>Število otrok</th>
+        <th>Rezervirana parcela</th>
+        <th>ID gosta</th>
+        <th>Ime</th>
+        <th>Priimek</th>
+        <th></th>
+
+      </tr>
+      %for id, pricetek_bivanja, st_nocitev, odrasli, otroci, rezervirana_parcela, gost, ime, priimek in rezervacija:
+      <tr>
+        <td>{{id}}</td>
+        <td>{{pricetek_bivanja}}</td>
+        <td>{{st_nocitev}}</td>
+        <td>{{odrasli}}</td>
+        <td>{{otroci}}</td>
+        <td>{{rezervirana_parcela}}</td>
+        <td>{{gost}}</td>        
+        <td>{{ime}}</td>
+        <td>{{priimek}}</td>
+        <th class="dropdown">
+        <button class="btn btn-secondary btn-outline-dark dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Možnosti
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#">Uredi</a>
+            <a class="dropdown-item" href="#">Predračun</a>
+            <a class="dropdown-item" href="#">Izstavi račun</a>
+            <a class="dropdown-item" href="#">Zbriši</a>
+          </div>
+        </th>
+      </tr>
+      %end
+    </table>

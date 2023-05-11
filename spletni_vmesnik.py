@@ -72,7 +72,8 @@ def prijava_receptor_post():
         redirect(url('prijava_receptor_get'))
         return
     #redirect(url('izbira_pregleda'))
-    return 'Uspešna prijava'
+    redirect(url('rezervacije_get'))
+    return #'Uspešna prijava'
 
 @get('/gost/prijava') 
 def prijava_gost_get():
@@ -124,7 +125,13 @@ def registracija_post():
     return 'Uspešna registracija'
 
 
-
+@get('/rezervacije')
+def rezervacije_get():
+    cur.execute("""
+        SELECT rezervacije.id,  pricetek_bivanja, st_nocitev,odrasli,otroci, rezervirana_parcela, gost, ime, priimek FROM rezervacije
+        LEFT JOIN uporabnik ON uporabnik.id = rezervacije.gost
+    """)
+    return template('rezervacije.html', rezervacija = cur)
 
 
 conn = psycopg2.connect(database=auth.db, host=auth.host, user=auth.user, password=auth.password, port=DB_PORT)
