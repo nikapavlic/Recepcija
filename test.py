@@ -38,3 +38,6 @@ rezervacija1 = rezervacije(pricetek_bivanja='2023-04-30', st_nocitev=10, odrasli
 
 b = repo.tabela_rezervacije('2023-05-31')
 print(b)
+
+test = repo.dobi_proste_parcele('2023-05-31',5,2,2)
+print(test)

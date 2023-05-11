@@ -4,7 +4,7 @@
 # registracija gosta 
 # registracija receptorja --> vidi vse rezervacije: lahko glede na dan začetka rezervacin 
 # in glede na dan zacetek + stevilo nočitev
-
+from datetime import datetime as dt
 # uvozimo psycopg2
 import psycopg2, psycopg2.extensions, psycopg2.extras
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) # se znebimo problemov s šumniki
@@ -77,6 +77,31 @@ class Repo:
         self.conn.commit()
         return rezervacije
     
+    # def dobi_proste_parcele(self, datum_nove, st_dni_nove, st_odraslih, st_otrok):
+    #     datum_zacetka_nove = dt.strptime(datum_nove, '%Y-%m-%d').date() 
+    #     self.cur.execute("""
+    #     SELECT DISTINCT parcela.id FROM parcela  
+    #     LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id
+    #     WHERE st_gostov >= %s""", (st_odraslih + st_otrok,))
+    #     parcele_seznam = self.cur.fetchall()
+    #     parcele_na_voljo = [parcela for seznam in parcele_seznam for parcela in seznam]
+    #     self.cur.execute("""
+    #     SELECT * FROM parcela  
+    #     LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id
+    #     WHERE st_gostov >= %s""", (st_odraslih + st_otrok,))
+    #     for stara_rezervacija in self.cur.fetchall():
+    #         if stara_rezervacija[3] <= datum_zacetka_nove and stara_rezervacija[3] + stara_rezervacija[4] > datum_zacetka_nove:
+    #             parcele_na_voljo.remove(stara_rezervacija[0])
+    #         elif stara_rezervacija[3] >= datum_zacetka_nove and datum_zacetka_nove + st_dni_nove > stara_rezervacija[3]:
+    #             parcele_na_voljo.remove(stara_rezervacija[0])
+    #         else:
+    #             continue
+    #     return parcele_na_voljo
+         
+           
+#         
+
+    
 
     ####
 
@@ -98,3 +123,13 @@ class Repo:
 
 
         # return [parcela(id, st_gostov) for (id, st_gostov) in self.cur.fetchall()]
+
+        
+        # datum_zacetka_stare, st_dni_stare, datum_zacetka_nove, st_dni_nove
+
+        # if datum_zacetka_stare <= datum_zacetka_nove and datum_zacetka_stare + st_dni_stare > datum_zacetka_nove
+        #   parcela je zasedena
+        # elseif datum_zacetka_stare >= datum_zacetka_nove and datum_zacetka_nove + st_dni_nove > datum_zacetka_stare
+        #   parcela je zasedena
+        # else
+        #   parcela prosta
