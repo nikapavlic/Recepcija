@@ -5,6 +5,7 @@
 from bottleext import *
 from data.model import *
 from database import Repo
+from functools import wraps
 
 # uvozimo ustrezne podatke za povezavo
 import data.auth as auth
@@ -47,6 +48,98 @@ def receptorji():
 # def izbira_uporabnika():
 #     return template('izbira_uporabnika.html', izbira_uporabnika=izbira_uporabnika)
 
+def cookie_required(f):
+    """
+    Dekorator, ki zahteva veljaven piškotek. Če piškotka ni, uporabnika preusmeri na stran za prijavo.
+    """
+    @wraps(f)
+    def decorated( *args, **kwargs):
+        
+           
+        cookie = request.get_cookie("uporabnik")
+        if cookie:
+            return f(*args, **kwargs)
+        
+        return template("receptor_prijava.html", napaka="Potrebna je prijava!")
+
+     
+        
+        
+    return decorated
+
+@get('/static/<filename:path>')
+def static(filename):
+    return static_file(filename, root='static')
+
+
+
+# @get('/')
+# @cookie_required
+# def index():
+#     """
+#     Domača stran je stran z cenami izdelkov.
+#     """
+
+#     izdelki = repo.cena_izdelkov()
+        
+#     return template_user('izdelki.html', skip=0, take=10, izdelki=izdelki)
+ 
+    
+# @get('/izdelki/<skip:int>/<take:int>/')
+# @cookie_required
+# def izdelki(skip, take):    
+    
+#     izdelki = repo.cena_izdelkov(skip=skip, take=take )
+#     return template_user('izdelki.html',skip=skip, take=take, izdelki=izdelki)
+
+# @get('/kategorije/<skip:int>/<take:int>/')
+# @cookie_required
+# def kategorije(skip, take):    
+    
+#     kategorije = repo.kategorije_izdelkov(skip=skip, take=take )
+#     return template_user('kategorije.html' ,skip=skip, take=take, kategorije=kategorije)
+    
+    
+    
+
+# @post('/receptor/prijava')
+# def receptor_prijava_post():
+#     """
+#     Prijavi uporabnika v aplikacijo. Če je prijava uspešna, ustvari piškotke o uporabniku in njegovi roli.
+#     Drugače sporoči, da je prijava neuspešna.
+#     """
+#     username = request.forms.get('uporabnik')
+#     password = request.forms.get('geslo')
+
+#     if not auth.obstaja_uporabnik(username):
+#         return template("receptor_prijava.html", napaka="Uporabnik s tem imenom ne obstaja")
+
+#     prijava = auth.prijavi_uporabnika(username, password)
+#     if prijava:
+#         response.set_cookie("uporabnik", username)
+#         response.set_cookie("rola", prijava.role)
+        
+#         redirect(url('index'))
+        
+#     else:
+#         return template("receptor_prijava.html", napaka="Neuspešna prijava. Napačno geslo ali uporabniško ime.")
+    
+@get('/odjava')
+def odjava():
+    """
+    Odjavi uporabnika iz aplikacije. Pobriše piškotke o uporabniku in njegovi roli.
+    """
+    
+    response.delete_cookie("uporabnik")
+    response.delete_cookie("rola")
+    
+    return template('zacetna_stran.html', napaka=None)
+
+
+
+
+
+
 @get('/receptor/prijava') 
 def prijava_receptor_get():
     return template("receptor_prijava.html")
@@ -71,9 +164,14 @@ def prijava_receptor_post():
       #  nastaviSporocilo('Nekaj je šlo narobe.') 
         redirect(url('prijava_receptor_get'))
         return
+    #### NE DELAJO COOKIJI????
+    response.set_cookie("uporabnik", uporabnisko_ime)
+    response.set_cookie("rola", "receptor")
+    
     #redirect(url('izbira_pregleda'))
     redirect(url('rezervacije_get'))
-    return #'Uspešna prijava'
+    #ck = request.get_cookie("uporab")
+    return #str(ck)
 
 @get('/gost/prijava') 
 def prijava_gost_get():
@@ -148,12 +246,13 @@ def registracija_post():
 
 
 @get('/rezervacije')
+#@cookie_required #Če to odkomentiraš kr naenkrat pri prijavi ne dela, ker se cookiji očitno ne prenesejo naprej in potem ta funkcija ne dela
 def rezervacije_get():
     cur.execute("""
         SELECT rezervacije.id,  pricetek_bivanja, st_nocitev,odrasli,otroci, rezervirana_parcela, gost, ime, priimek FROM rezervacije
         LEFT JOIN uporabnik ON uporabnik.id = rezervacije.gost
     """)
-    return template('rezervacije.html', rezervacija = cur)
+    return template_user('rezervacije.html', rezervacija = cur)
 
 
 
