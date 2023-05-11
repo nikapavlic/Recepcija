@@ -4,7 +4,7 @@
 # registracija gosta 
 # registracija receptorja --> vidi vse rezervacije: lahko glede na dan začetka rezervacin 
 # in glede na dan zacetek + stevilo nočitev
-from datetime import datetime as dt
+from datetime import datetime as dt, timedelta
 # uvozimo psycopg2
 import psycopg2, psycopg2.extensions, psycopg2.extras
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) # se znebimo problemov s šumniki
@@ -65,38 +65,34 @@ class Repo:
 
 
     def dodaj_rezervacije(self, rezervacije:rezervacije) -> rezervacije:
-        # najprej je treba preveriti če je takšno rezervacijo možno narediti:
-
-        # ali je izbrana parcela primerna za otroci + odrasli <= st_gostov?
-        # ali je parcela prosta na izbrane dni? 
-        # --  to se lahko naredi tudi v aplikaciji tako, da je možno izbrati za rezervacijo le parcele, ki so primerne in proste
-
         self.cur.execute("""
             INSERT INTO rezervacije (pricetek_bivanja, st_nocitev, odrasli, otroci, rezervirana_parcela, gost)
               VALUES (%s, %s, %s, %s, %s, %s); """, (rezervacije.pricetek_bivanja, rezervacije.st_nocitev, rezervacije.odrasli, rezervacije.otroci, rezervacije.rezervirana_parcela, rezervacije.gost))
         self.conn.commit()
         return rezervacije
     
-    # def dobi_proste_parcele(self, datum_nove, st_dni_nove, st_odraslih, st_otrok):
-    #     datum_zacetka_nove = dt.strptime(datum_nove, '%Y-%m-%d').date() 
-    #     self.cur.execute("""
-    #     SELECT DISTINCT parcela.id FROM parcela  
-    #     LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id
-    #     WHERE st_gostov >= %s""", (st_odraslih + st_otrok,))
-    #     parcele_seznam = self.cur.fetchall()
-    #     parcele_na_voljo = [parcela for seznam in parcele_seznam for parcela in seznam]
-    #     self.cur.execute("""
-    #     SELECT * FROM parcela  
-    #     LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id
-    #     WHERE st_gostov >= %s""", (st_odraslih + st_otrok,))
-    #     for stara_rezervacija in self.cur.fetchall():
-    #         if stara_rezervacija[3] <= datum_zacetka_nove and stara_rezervacija[3] + stara_rezervacija[4] > datum_zacetka_nove:
-    #             parcele_na_voljo.remove(stara_rezervacija[0])
-    #         elif stara_rezervacija[3] >= datum_zacetka_nove and datum_zacetka_nove + st_dni_nove > stara_rezervacija[3]:
-    #             parcele_na_voljo.remove(stara_rezervacija[0])
-    #         else:
-    #             continue
-    #     return parcele_na_voljo
+    def dobi_proste_parcele(self, datum_nove, st_dni_nove, st_odraslih, st_otrok):
+        datum_zacetka_nove = dt.strptime(datum_nove, '%Y-%m-%d').date() 
+        self.cur.execute("""
+        SELECT DISTINCT parcela.id FROM parcela  
+        LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id
+        WHERE st_gostov >= %s""", (st_odraslih + st_otrok,))
+        parcele_seznam = self.cur.fetchall()
+        parcele_na_voljo = [parcela for seznam in parcele_seznam for parcela in seznam]
+        self.cur.execute("""
+        SELECT * FROM parcela  
+        LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id
+        WHERE st_gostov >= %s""", (st_odraslih + st_otrok,))
+        for stara_rezervacija in self.cur.fetchall():
+            if stara_rezervacija[3] == None:
+                continue
+            elif stara_rezervacija[3] <= datum_zacetka_nove and stara_rezervacija[3] + timedelta(days=stara_rezervacija[4]) > datum_zacetka_nove:
+                parcele_na_voljo.remove(stara_rezervacija[0])
+            elif stara_rezervacija[3] >= datum_zacetka_nove and datum_zacetka_nove + timedelta(days=st_dni_nove) > stara_rezervacija[3]:
+                parcele_na_voljo.remove(stara_rezervacija[0])
+            else:
+                continue
+        return parcele_na_voljo
          
            
 #         

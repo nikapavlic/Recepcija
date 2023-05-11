@@ -79,7 +79,7 @@ def prijava_receptor_post():
 def prijava_gost_get():
     return template("gost_prijava.html")
 
-# kot zaposleni se lahko prijavimo npr. z emšom 1 in geslom 1234
+
 @post('/gost/prijava') 
 def prijava_gost_post():
     uporabnisko_ime = request.forms.get('uporabnisko_ime')
@@ -101,6 +101,28 @@ def prijava_gost_post():
          return
     #redirect(url('izbira_pregleda'))
     return 'Uspešna gost prijava'
+
+# treba še popraviti
+
+# @get('/gost/rezervacija/<id>')
+# def gost_rezervacija_get(id):
+#     cur.execute("SELECT id FROM uporabnik WHERE id = %s", (id, ))
+#     # id_gosta = cur.fetchone()
+#     return template("nova_rezervacija.html")
+
+# @post('/gost/rezervacija/<id>')
+# def gost_rezervacija_post(id):
+#     zacetek_nocitve = request.forms.zacetek_nocitve
+#     stevilo_dni = request.forms.stevilo_dni
+#     stevilo_odraslih = request.forms.stevilo_odraslih
+#     stevilo_otrok = request.forms.stevilo_otrok
+#     seznam_prostih_parcel = Repo.dobi_proste_parcele(zacetek_nocitve, stevilo_dni, stevilo_odraslih, stevilo_otrok)
+
+#     rezervacija = rezervacije(pricetek_bivanja=zacetek_nocitve, st_nocitev=stevilo_dni, odrasli=stevilo_odraslih, otroci=stevilo_otrok, rezervirana_parcela=seznam_prostih_parcel[0], gost=id)
+
+#     Repo.dodaj_rezervacije(rezervacija)
+#     return 'Uspešno dodana rezervacija'
+    #v gost=manjka id gosta, ki dela rezervacijo, to bi lahko dodale v samo metodo zgoraj, ker je rezervacija itak vezana na uporabnika
 
 
 @get('/registracija')
@@ -132,6 +154,7 @@ def rezervacije_get():
         LEFT JOIN uporabnik ON uporabnik.id = rezervacije.gost
     """)
     return template('rezervacije.html', rezervacija = cur)
+
 
 
 conn = psycopg2.connect(database=auth.db, host=auth.host, user=auth.user, password=auth.password, port=DB_PORT)
