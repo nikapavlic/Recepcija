@@ -45,3 +45,6 @@ print(test)
 cur.execute("SELECT id FROM uporabnik")
 id_gosta = cur.fetchall()[1][0]
 print(id_gosta)
+
+seznam_prostih_parcel = repo.dobi_proste_parcele('2023-04-30', 3, 2, 1)
+print(seznam_prostih_parcel[0])

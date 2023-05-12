@@ -188,8 +188,8 @@ def prijava_gost_post():
     try: 
         cur.execute("SELECT geslo FROM uporabnik WHERE uporabnisko_ime = %s", [uporabnisko_ime])
         hashBaza = cur.fetchall()[0][0]
-#        cur.execute("SELECT id FROM uporabnik WHERE uporabnisko_ime = %s", [uporabnisko_ime])
-#        id_gosta = cur.fetchall()[0][0]
+        cur.execute("SELECT id FROM uporabnik WHERE uporabnisko_ime = %s", [uporabnisko_ime])
+        id_gosta = cur.fetchall()[0][0]
     except:
         hashBaza = None
     if hashBaza is None:
@@ -199,23 +199,22 @@ def prijava_gost_post():
          #nastaviSporocilo('Nekaj je šlo narobe.') 
          redirect(url('prijava_gost_get'))
          return
-    redirect(url('pregled_rezervacij_gosta'))
-#    redirect(url('pregled_rezervacij_gosta',id_gosta=id_gosta))
+#    redirect(url('pregled_rezervacij_gosta'))
+    redirect(url('pregled_rezervacij_gosta', id_gosta=id_gosta))
 
-@get('/gost/pregled')
-def pregled_rezervacij_gosta():
-    return template('gost_pregled.html')
-
-# @get('/gost/pregled/<id>')
-# def pregled_rezervacij_gosta(id_gosta):
-#     cur.execute("""
-#         SELECT id, pricetek_bivanja, gost FROM rezervacije
-#         INNER JOIN uporabnik ON rezervacije.gost = uporabnik.id
-#         WHERE id = %s
-#     """,
-#     (id_gosta))
+# @get('/gost/pregled')
+# def pregled_rezervacij_gosta():
 #     return template('gost_pregled.html')
-# ali bi ze tukaj morala dodajati id gosta
+
+@get('/gost/pregled/<id_gosta>')
+def pregled_rezervacij_gosta(id_gosta):
+    # cur.execute("""
+    #     SELECT id, gost FROM rezervacije
+    #     INNER JOIN uporabnik ON rezervacije.gost = uporabnik.id
+    #     WHERE id = %s
+    # """,
+    # (id_gosta))
+    return template('gost_pregled.html',id_gosta=id_gosta)
 
 # REZERVACIJA
 # treba še popraviti

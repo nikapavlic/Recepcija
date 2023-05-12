@@ -1,7 +1,7 @@
 % rebase('base.html', naslov='Tukaj si lahko ogledaš rezervacije')
 
 <tr>
-            <form action="{{url('pregled_rezervacij_gosta')}}" method="get">
+            <form action="{{url('gost_rezervacija_get', id=id_gosta)}}" method="get">
                 <td><button class="btn btn-light btn-outline-dark" type="submit">Ustvari novo rezervacijo</button></td>
             </form> 
 </tr>
