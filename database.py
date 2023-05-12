@@ -67,7 +67,9 @@ class Repo:
     def dodaj_rezervacije(self, rezervacije:rezervacije) -> rezervacije:
         self.cur.execute("""
             INSERT INTO rezervacije (pricetek_bivanja, st_nocitev, odrasli, otroci, rezervirana_parcela, gost)
-              VALUES (%s, %s, %s, %s, %s, %s); """, (rezervacije.pricetek_bivanja, rezervacije.st_nocitev, rezervacije.odrasli, rezervacije.otroci, rezervacije.rezervirana_parcela, rezervacije.gost))
+              VALUES (%s, %s, %s, %s, %s, %s)
+              returning id """, (rezervacije.pricetek_bivanja, rezervacije.st_nocitev, rezervacije.odrasli, rezervacije.otroci, rezervacije.rezervirana_parcela, rezervacije.gost))
+        id,=self.cur.fetchone()
         self.conn.commit()
         return rezervacije
     

@@ -188,6 +188,8 @@ def prijava_gost_post():
     try: 
         cur.execute("SELECT geslo FROM uporabnik WHERE uporabnisko_ime = %s", [uporabnisko_ime])
         hashBaza = cur.fetchall()[0][0]
+#        cur.execute("SELECT id FROM uporabnik WHERE uporabnisko_ime = %s", [uporabnisko_ime])
+#        id_gosta = cur.fetchall()[0][0]
     except:
         hashBaza = None
     if hashBaza is None:
@@ -197,30 +199,47 @@ def prijava_gost_post():
          #nastaviSporocilo('Nekaj je šlo narobe.') 
          redirect(url('prijava_gost_get'))
          return
-    #redirect(url('izbira_pregleda'))
-    return 'Uspešna gost prijava'
+    redirect(url('pregled_rezervacij_gosta'))
+#    redirect(url('pregled_rezervacij_gosta',id_gosta=id_gosta))
 
+@get('/gost/pregled')
+def pregled_rezervacij_gosta():
+    return template('gost_pregled.html')
+
+# @get('/gost/pregled/<id>')
+# def pregled_rezervacij_gosta(id_gosta):
+#     cur.execute("""
+#         SELECT id, pricetek_bivanja, gost FROM rezervacije
+#         INNER JOIN uporabnik ON rezervacije.gost = uporabnik.id
+#         WHERE id = %s
+#     """,
+#     (id_gosta))
+#     return template('gost_pregled.html')
+# ali bi ze tukaj morala dodajati id gosta
+
+# REZERVACIJA
 # treba še popraviti
 
-# @get('/gost/rezervacija/<id>')
-# def gost_rezervacija_get(id):
-#     cur.execute("SELECT id FROM uporabnik WHERE id = %s", (id, ))
-#     # id_gosta = cur.fetchone()
-#     return template("nova_rezervacija.html")
+@get('/gost/rezervacija/<id>')
+def gost_rezervacija_get(id):
+    cur.execute("""SELECT id FROM uporabnik WHERE id = %s""", (id, ))
+    # id_gosta = cur.fetchone()
+    return template("nova_rezervacija.html")
 
-# @post('/gost/rezervacija/<id>')
-# def gost_rezervacija_post(id):
-#     zacetek_nocitve = request.forms.zacetek_nocitve
-#     stevilo_dni = request.forms.stevilo_dni
-#     stevilo_odraslih = request.forms.stevilo_odraslih
-#     stevilo_otrok = request.forms.stevilo_otrok
-#     seznam_prostih_parcel = Repo.dobi_proste_parcele(zacetek_nocitve, stevilo_dni, stevilo_odraslih, stevilo_otrok)
+@post('/gost/rezervacija/<id>')
+def gost_rezervacija_post(id):
+    zacetek_nocitve = request.forms.zacetek_nocitve
+    stevilo_dni = request.forms.stevilo_dni
+    stevilo_odraslih = request.forms.stevilo_odraslih
+    stevilo_otrok = request.forms.stevilo_otrok
+    seznam_prostih_parcel = Repo.dobi_proste_parcele(zacetek_nocitve, stevilo_dni, stevilo_odraslih, stevilo_otrok)
 
-#     rezervacija = rezervacije(pricetek_bivanja=zacetek_nocitve, st_nocitev=stevilo_dni, odrasli=stevilo_odraslih, otroci=stevilo_otrok, rezervirana_parcela=seznam_prostih_parcel[0], gost=id)
+    rezervacija = rezervacije(pricetek_bivanja=zacetek_nocitve, st_nocitev=stevilo_dni, odrasli=stevilo_odraslih, otroci=stevilo_otrok, rezervirana_parcela=seznam_prostih_parcel[0], gost=id)
 
-#     Repo.dodaj_rezervacije(rezervacija)
-#     return 'Uspešno dodana rezervacija'
-    #v gost=manjka id gosta, ki dela rezervacijo, to bi lahko dodale v samo metodo zgoraj, ker je rezervacija itak vezana na uporabnika
+    Repo.dodaj_rezervacije(rezervacija)
+    return 'Uspešno dodana rezervacija'
+
+   # v gost=manjka id gosta, ki dela rezervacijo, to bi lahko dodale v samo metodo zgoraj, ker je rezervacija itak vezana na uporabnika
 
 
 @get('/registracija')
