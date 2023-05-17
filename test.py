@@ -48,3 +48,7 @@ print(id_gosta)
 
 seznam_prostih_parcel = repo.dobi_proste_parcele('2023-04-30', 3, 2, 1)
 print(seznam_prostih_parcel[0])
+
+
+rezervacija = repo.zbrisi_rezervacijo(6)
+print(rezervacija)

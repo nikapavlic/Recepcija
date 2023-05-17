@@ -35,7 +35,10 @@
             <a class="dropdown-item" href="#">Uredi</a>
             <a class="dropdown-item" href="#">Predračun</a>
             <a class="dropdown-item" href="#">Izstavi račun</a>
-            <a class="dropdown-item" href="#">Zbriši</a>
+            <form method = "POST" action="/zbrisi-rezervacijo">
+              <button class="dropdown-item" type="submit" name = "id_rezervacije" value = {{id}}>Zbriši</button>
+            </form>
+            
           </div>
         </th>
       </tr>

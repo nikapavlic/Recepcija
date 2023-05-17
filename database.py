@@ -96,7 +96,10 @@ class Repo:
                 continue
         return parcele_na_voljo
          
-           
+    def zbrisi_rezervacijo(self, id_rezervacije):
+        self.cur.execute("""DELETE FROM rezervacije WHERE id = %s""", (id_rezervacije,))
+        self.conn.commit()
+        return 
 #         
 
     

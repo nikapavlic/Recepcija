@@ -155,6 +155,8 @@ def prijava_receptor_post():
     try: 
         cur.execute("SELECT geslo FROM receptor WHERE uporabnisko_ime = %s", [uporabnisko_ime])
         hashBaza = cur.fetchall()[0][0]
+       # cur.execute("SELECT id FROM receptor WHERE uporabnisko_ime = %s", [uporabnisko_ime])
+       # id_receptorja = cur.fetchall()[0][0]
     except:
         hashBaza = None
     if hashBaza is None:
@@ -169,9 +171,10 @@ def prijava_receptor_post():
     response.set_cookie("rola", "receptor")
     
     #redirect(url('izbira_pregleda'))
-    redirect(url('rezervacije_get'))
-    #ck = request.get_cookie("uporab")
-    return #str(ck)
+    redirect(url('rezervacije_get'))#, id_receptorja = id_receptorja, receptor = True)
+    #ck = request.get_cookie("uporabnik")
+    #rl = request.get_cookie("rola")
+    #return #str(ck)
 
 @get('/gost/prijava') 
 def prijava_gost_get():
@@ -209,11 +212,11 @@ def prijava_gost_post():
 @get('/gost/pregled/<id_gosta>')
 def pregled_rezervacij_gosta(id_gosta):
     # cur.execute("""
-    #     SELECT id, gost FROM rezervacije
-    #     INNER JOIN uporabnik ON rezervacije.gost = uporabnik.id
-    #     WHERE id = %s
-    # """,
-    # (id_gosta))
+    #      SELECT id, gost FROM rezervacije
+    #      INNER JOIN uporabnik ON rezervacije.gost = uporabnik.id
+    #      WHERE id = %s
+    #  """,
+    #  (id_gosta))
     return template('gost_pregled.html',id_gosta=id_gosta)
 
 # REZERVACIJA
@@ -265,12 +268,22 @@ def registracija_post():
 
 @get('/rezervacije')
 #@cookie_required #Če to odkomentiraš kr naenkrat pri prijavi ne dela, ker se cookiji očitno ne prenesejo naprej in potem ta funkcija ne dela
-def rezervacije_get():
+def rezervacije_get():#,id_receptorja receptor):
+    # if receptor != True:
+    #     template_user('receptor_prijava.html')
+    # else:
     cur.execute("""
         SELECT rezervacije.id,  pricetek_bivanja, st_nocitev,odrasli,otroci, rezervirana_parcela, gost, ime, priimek FROM rezervacije
         LEFT JOIN uporabnik ON uporabnik.id = rezervacije.gost
     """)
     return template_user('rezervacije.html', rezervacija = cur)
+
+@post('/zbrisi-rezervacijo')
+def zbrisi_rezervacijo():
+    id_rezervacije = request.forms.id_rezervacije
+    Repo.zbrisi_rezervacijo(id_rezervacije)
+    redirect(url('rezervacije_get'))
+
 
 
 
