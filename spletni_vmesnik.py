@@ -170,9 +170,10 @@ def prijava_receptor_post():
         redirect(url('prijava_receptor_get'))
         return
     #### NE DELAJO COOKIJI????
-    response.set_cookie("uporabnisko_ime", uporabnisko_ime, secret = "secret_value", path = "/", httponly = True)
-    #response.set_cookie("rola", "receptor")
+    response.set_cookie("uporabnisko_ime", uporabnisko_ime,  path = "/") #secret = "secret_value",, httponly = True)
+    response.set_cookie("rola", "receptor",  path = "/")
     
+
     #redirect(url('izbira_pregleda'))
     redirect(url('rezervacije_get'))#, id_receptorja = id_receptorja, receptor = True)
     #ck = request.get_cookie("uporabnik")
