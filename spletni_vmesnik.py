@@ -3,6 +3,8 @@
 
 # uvozimo bottle.py
 from bottleext import *
+# from bottleext import get, post, run, request, template, redirect, static_file, url, response, template_user
+
 from data.model import *
 from database import Repo
 from functools import wraps
@@ -26,10 +28,7 @@ Repo=Repo()
 #za debugiranje
 #debuger(True)
 
-@get('/')
-def index():
-    return template('zacetna_stran.html')
-    #return 'Začetna stran'
+
 
 # @get('/')
 # def index():
@@ -56,16 +55,22 @@ def cookie_required(f):
     def decorated( *args, **kwargs):
         
            
-        cookie = request.get_cookie("uporabnik")
+        cookie = request.get_cookie("uporabnisko_ime")
         if cookie:
             return f(*args, **kwargs)
         
-        return template("receptor_prijava.html", napaka="Potrebna je prijava!")
+        return template("receptor_prijava.html", napaka="dekorator!")
 
      
         
         
     return decorated
+
+@get('/')
+def index():
+    return template('zacetna_stran.html')
+    #return 'Začetna stran'
+
 
 @get('/static/<filename:path>')
 def static(filename):
@@ -138,8 +143,6 @@ def odjava():
 
 
 
-
-
 @get('/receptor/prijava') 
 def prijava_receptor_get():
     return template("receptor_prijava.html")
@@ -167,8 +170,8 @@ def prijava_receptor_post():
         redirect(url('prijava_receptor_get'))
         return
     #### NE DELAJO COOKIJI????
-    response.set_cookie("uporabnik", uporabnisko_ime)
-    response.set_cookie("rola", "receptor")
+    response.set_cookie("uporabnisko_ime", uporabnisko_ime, secret = "secret_value", path = "/", httponly = True)
+    #response.set_cookie("rola", "receptor")
     
     #redirect(url('izbira_pregleda'))
     redirect(url('rezervacije_get'))#, id_receptorja = id_receptorja, receptor = True)
@@ -267,11 +270,12 @@ def registracija_post():
 
 
 @get('/rezervacije')
-#@cookie_required #Če to odkomentiraš kr naenkrat pri prijavi ne dela, ker se cookiji očitno ne prenesejo naprej in potem ta funkcija ne dela
+@cookie_required #Če to odkomentiraš kr naenkrat pri prijavi ne dela, ker se cookiji očitno ne prenesejo naprej in potem ta funkcija ne dela
 def rezervacije_get():#,id_receptorja receptor):
-    # if receptor != True:
-    #     template_user('receptor_prijava.html')
-    # else:
+    #receptor = request.get_cookie("uporabnisko_ime")
+    #if receptor == None:
+    #    template_user('receptor_prijava.html')
+    #else:
     cur.execute("""
         SELECT rezervacije.id,  pricetek_bivanja, st_nocitev,odrasli,otroci, rezervirana_parcela, gost, ime, priimek FROM rezervacije
         LEFT JOIN uporabnik ON uporabnik.id = rezervacije.gost
