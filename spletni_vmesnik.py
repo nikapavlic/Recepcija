@@ -8,6 +8,8 @@ from bottleext import *
 from data.model import *
 from database import Repo
 from functools import wraps
+from datetime import datetime as dt
+from datetime import date
 
 # uvozimo ustrezne podatke za povezavo
 import data.auth as auth
@@ -238,12 +240,14 @@ def gost_rezervacija_post(id):
     stevilo_dni = request.forms.stevilo_dni
     stevilo_odraslih = request.forms.stevilo_odraslih
     stevilo_otrok = request.forms.stevilo_otrok
+    #zacetek_nocitve = zacetek_nocitve.strftime("%Y-%m-%d")
     seznam_prostih_parcel = Repo.dobi_proste_parcele(zacetek_nocitve, stevilo_dni, stevilo_odraslih, stevilo_otrok)
 
-    rezervacija = rezervacije(pricetek_bivanja=zacetek_nocitve, st_nocitev=stevilo_dni, odrasli=stevilo_odraslih, otroci=stevilo_otrok, rezervirana_parcela=seznam_prostih_parcel[0], gost=id)
+    #rezervacija = rezervacije(pricetek_bivanja=zacetek_nocitve, st_nocitev=stevilo_dni, odrasli=stevilo_odraslih, otroci=stevilo_otrok, rezervirana_parcela=seznam_prostih_parcel[0], gost=id)
 
-    Repo.dodaj_rezervacije(rezervacija)
-    return 'Uspešno dodana rezervacija'
+    #Repo.dodaj_rezervacije(rezervacija)
+    return print(str(seznam_prostih_parcel))
+    #return "Uspešno dodano"
 
    # v gost=manjka id gosta, ki dela rezervacijo, to bi lahko dodale v samo metodo zgoraj, ker je rezervacija itak vezana na uporabnika
 
@@ -267,7 +271,7 @@ def registracija_post():
 
     uporabnik1=uporabnik(uporabnisko_ime=uporabnisko_ime, geslo=geslo, ime=ime, priimek=priimek, rojstvo=rojstvo, nacionalnost=nacionalnost)
     Repo.dodaj_uporabnik(uporabnik1)
-    return 'Uspešna registracija'
+    redirect(url('prijava_gost_get'))
 
 
 @get('/rezervacije')

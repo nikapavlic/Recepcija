@@ -73,29 +73,47 @@ class Repo:
         self.conn.commit()
         return rezervacije
     
+    # def dobi_proste_parcele(self, datum_nove, st_dni_nove, st_odraslih, st_otrok):
+    #     datum_zacetka_nove = dt.strptime(datum_nove, '%Y-%m-%d').date() 
+    #     #datum_zacetka_nove = datum_nove
+    #     self.cur.execute("""
+    #     SELECT DISTINCT parcela.id FROM parcela  
+    #     LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id
+    #     WHERE st_gostov >= %s""", (st_odraslih + st_otrok,))
+    #     parcele_seznam = self.cur.fetchall()
+    #     parcele_na_voljo = [parcela for seznam in parcele_seznam for parcela in seznam]
+    #     self.cur.execute("""
+    #     SELECT * FROM parcela  
+    #     LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id
+    #     WHERE st_gostov >= %s""", (st_odraslih + st_otrok,))
+    #     for stara_rezervacija in self.cur.fetchall():
+    #         if stara_rezervacija[3] == None:
+    #             continue
+    #         elif stara_rezervacija[3] <= datum_zacetka_nove and stara_rezervacija[3] + timedelta(days=stara_rezervacija[4]) > datum_zacetka_nove:
+    #             parcele_na_voljo.remove(stara_rezervacija[0])
+    #         elif stara_rezervacija[3] >= datum_zacetka_nove and datum_zacetka_nove + timedelta(days=st_dni_nove) > stara_rezervacija[3]:
+    #             parcele_na_voljo.remove(stara_rezervacija[0])
+    #         else:
+    #             continue
+    #     #return parcele_na_voljo
+    #     return datum_zacetka_nove
+
     def dobi_proste_parcele(self, datum_nove, st_dni_nove, st_odraslih, st_otrok):
-        datum_zacetka_nove = dt.strptime(datum_nove, '%Y-%m-%d').date() 
-        self.cur.execute("""
-        SELECT DISTINCT parcela.id FROM parcela  
-        LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id
-        WHERE st_gostov >= %s""", (st_odraslih + st_otrok,))
-        parcele_seznam = self.cur.fetchall()
-        parcele_na_voljo = [parcela for seznam in parcele_seznam for parcela in seznam]
-        self.cur.execute("""
-        SELECT * FROM parcela  
-        LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id
-        WHERE st_gostov >= %s""", (st_odraslih + st_otrok,))
-        for stara_rezervacija in self.cur.fetchall():
-            if stara_rezervacija[3] == None:
-                continue
-            elif stara_rezervacija[3] <= datum_zacetka_nove and stara_rezervacija[3] + timedelta(days=stara_rezervacija[4]) > datum_zacetka_nove:
-                parcele_na_voljo.remove(stara_rezervacija[0])
-            elif stara_rezervacija[3] >= datum_zacetka_nove and datum_zacetka_nove + timedelta(days=st_dni_nove) > stara_rezervacija[3]:
-                parcele_na_voljo.remove(stara_rezervacija[0])
-            else:
-                continue
-        return parcele_na_voljo
-         
+        self.cur.execute(
+            """SELECT parcela.id FROM parcela
+            LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id
+            WHERE st_gostov >= %s AND parcela.id NOT IN 
+                (SELECT parcela.id FROM parcela
+                LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id WHERE
+                pricetek_bivanja + st_nocitev  > TO_DATE(%s, 'YYYY-MM-DD') AND
+                pricetek_bivanja < TO_DATE(%s, 'YYYY-MM-DD') + %s)""",(st_odraslih+st_otrok, datum_nove, datum_nove, int(st_dni_nove)))
+        prosta_parcela = self.cur.fetchone()
+        return prosta_parcela
+
+
+
+
+
     def zbrisi_rezervacijo(self, id_rezervacije):
         self.cur.execute("""DELETE FROM rezervacije WHERE id = %s""", (id_rezervacije,))
         self.conn.commit()

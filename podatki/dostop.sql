@@ -15,6 +15,8 @@ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO leah WITH GRANT OPTION;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO spelab WITH GRANT OPTION;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO javnost;
 
+GRANT DELETE ON rezervacije TO javnost;
+
 -- dodatne pravice za uporabo aplikacije
 GRANT INSERT ON uporabnik TO javnost;
 GRANT INSERT ON rezervacije TO javnost;
