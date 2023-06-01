@@ -49,7 +49,7 @@ id_gosta = cur.fetchall()[1][0]
 print(id_gosta)
 
 seznam_prostih_parcel = repo.dobi_proste_parcele('2023-06-08', 3, 2, 1)
-print(seznam_prostih_parcel[0])
+print(seznam_prostih_parcel)
 
 
 # datum_zacetka_nove = dt.strptime('2024-04-30', '%Y-%m-%d').date()

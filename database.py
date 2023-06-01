@@ -106,9 +106,9 @@ class Repo:
                 (SELECT parcela.id FROM parcela
                 LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id WHERE
                 pricetek_bivanja + st_nocitev  > TO_DATE(%s, 'YYYY-MM-DD') AND
-                pricetek_bivanja < TO_DATE(%s, 'YYYY-MM-DD') + %s)""",(st_odraslih+st_otrok, datum_nove, datum_nove, int(st_dni_nove)))
+                pricetek_bivanja < TO_DATE(%s, 'YYYY-MM-DD') + %s)""",(int(st_odraslih)+int(st_otrok), datum_nove, datum_nove, int(st_dni_nove)))
         prosta_parcela = self.cur.fetchone()
-        return prosta_parcela
+        return prosta_parcela[0]
 
 
 

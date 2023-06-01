@@ -25,7 +25,7 @@ SERVER_PORT = os.environ.get('BOTTLE_PORT', 8080)
 RELOADER = os.environ.get('BOTTLE_RELOADER', True)
 DB_PORT = os.environ.get('POSTGRES_PORT', 5432)
 
-Repo=Repo()
+repo=Repo()
 
 #za debugiranje
 #debuger(True)
@@ -228,26 +228,28 @@ def pregled_rezervacij_gosta(id_gosta):
 # REZERVACIJA
 # treba še popraviti
 
-@get('/gost/rezervacija/<id>')
-def gost_rezervacija_get(id):
-    cur.execute("""SELECT id FROM uporabnik WHERE id = %s""", (id, ))
+@get('/gost/rezervacija/')
+def gost_rezervacija_get():
+    #cur.execute("""SELECT id FROM uporabnik WHERE id = %s""", (id, ))
     # id_gosta = cur.fetchone()
     return template("nova_rezervacija.html")
 
-@post('/gost/rezervacija/<id>')
-def gost_rezervacija_post(id):
+@post('/gost/rezervacija/')
+def gost_rezervacija_post():
     zacetek_nocitve = request.forms.zacetek_nocitve
-    stevilo_dni = request.forms.stevilo_dni
-    stevilo_odraslih = request.forms.stevilo_odraslih
-    stevilo_otrok = request.forms.stevilo_otrok
+    stevilo_dni = int(request.forms.stevilo_dni)
+    stevilo_odraslih = int(request.forms.stevilo_odraslih)
+    stevilo_otrok = int(request.forms.stevilo_otrok)
+    #zacetek_nocitve = str(zacetek_nocitve)
+    #zacetek_nocitve = '2023-09-01'
     #zacetek_nocitve = zacetek_nocitve.strftime("%Y-%m-%d")
-    seznam_prostih_parcel = Repo.dobi_proste_parcele(zacetek_nocitve, stevilo_dni, stevilo_odraslih, stevilo_otrok)
+    seznam_prostih_parcel = repo.dobi_proste_parcele(datum_nove = zacetek_nocitve, st_dni_nove=stevilo_dni, st_odraslih=stevilo_odraslih, st_otrok=stevilo_otrok)
 
-    #rezervacija = rezervacije(pricetek_bivanja=zacetek_nocitve, st_nocitev=stevilo_dni, odrasli=stevilo_odraslih, otroci=stevilo_otrok, rezervirana_parcela=seznam_prostih_parcel[0], gost=id)
+    rezervacija = rezervacije(pricetek_bivanja=zacetek_nocitve, st_nocitev=stevilo_dni, odrasli=stevilo_odraslih, otroci=stevilo_otrok, rezervirana_parcela=seznam_prostih_parcel, gost=17)
 
-    #Repo.dodaj_rezervacije(rezervacija)
-    return print(str(seznam_prostih_parcel))
-    #return "Uspešno dodano"
+    repo.dodaj_rezervacije(rezervacija)
+   # return zacetek_nocitve
+    return "Uspešno dodano"
 
    # v gost=manjka id gosta, ki dela rezervacijo, to bi lahko dodale v samo metodo zgoraj, ker je rezervacija itak vezana na uporabnika
 
@@ -270,7 +272,7 @@ def registracija_post():
     nacionalnost = request.forms.nacionalnost
 
     uporabnik1=uporabnik(uporabnisko_ime=uporabnisko_ime, geslo=geslo, ime=ime, priimek=priimek, rojstvo=rojstvo, nacionalnost=nacionalnost)
-    Repo.dodaj_uporabnik(uporabnik1)
+    repo.dodaj_uporabnik(uporabnik1)
     redirect(url('prijava_gost_get'))
 
 
@@ -290,7 +292,7 @@ def rezervacije_get():#,id_receptorja receptor):
 @post('/zbrisi-rezervacijo')
 def zbrisi_rezervacijo():
     id_rezervacije = request.forms.id_rezervacije
-    Repo.zbrisi_rezervacijo(id_rezervacije)
+    repo.zbrisi_rezervacijo(id_rezervacije)
     redirect(url('rezervacije_get'))
 
 
