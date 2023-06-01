@@ -1,6 +1,13 @@
 % rebase('base.html', naslov='Rezervacije')
 
-<p>{{uporabnik}},{{rola}}</p>
+
+
+<form action="{{url('odjava')}}" method="get">
+  <td><button class="btn btn-light btn-outline-dark float-right" type="submit">Odjava</button></td>
+</form>
+<span class="badge text-bg-primary float-right">{{uporabnik}}</span>
+
+
 
     <table class="table table-striped">
       <tr>

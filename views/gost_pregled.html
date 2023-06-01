@@ -1,7 +1,31 @@
 % rebase('base.html', naslov='Tukaj si lahko ogledaš rezervacije')
 
-<tr>
-            <form action="{{url('gost_rezervacija_get', id=id_gosta)}}" method="get">
-                <td><button class="btn btn-light btn-outline-dark" type="submit">Ustvari novo rezervacijo</button></td>
-            </form> 
+
+
+<form action="{{url('odjava')}}" method="get">
+  <td><button class="btn btn-light btn-outline-dark float-right" type="submit">Odjava</button></td>
+</form>
+<span class="badge text-bg-primary float-right">{{uporabnik}}</span>
+
+<table class="table table-striped">
+    <tr>
+      <th>Pričetek bivanja</th>
+      <th>Število nočitev</th>
+      <th>Število odraslih</th>
+      <th>Število otrok</th>
+      <th>Uporabniško ime</th>
+
+    </tr>
+    %for pricetek_bivanja, st_nocitev, odrasli, otroci, uporabnisko_ime in rezervacija:
+    <tr>
+      <td>{{pricetek_bivanja}}</td>
+      <td>{{st_nocitev}}</td>
+      <td>{{odrasli}}</td>
+      <td>{{otroci}}</td>
+      <td>{{uporabnisko_ime}}</td>
+    %end
 </tr>
+</table>
+<form action="{{url('gost_rezervacija_get')}}" method="get">
+    <td><button class="btn btn-light btn-outline-dark" type="submit">Ustvari novo rezervacijo</button></td>
+</form> 

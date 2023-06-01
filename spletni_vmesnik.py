@@ -208,22 +208,33 @@ def prijava_gost_post():
          #nastaviSporocilo('Nekaj je šlo narobe.') 
          redirect(url('prijava_gost_get'))
          return
+    response.set_cookie("uporabnisko_ime", uporabnisko_ime,  path = "/") #secret = "secret_value",, httponly = True)
+    response.set_cookie("rola", "gost",  path = "/")
+    response.set_cookie("id", str(id_gosta),  path = "/")
+    
 #    redirect(url('pregled_rezervacij_gosta'))
-    redirect(url('pregled_rezervacij_gosta', id_gosta=id_gosta))
+    redirect(url('pregled_rezervacij_gosta'))#, id_gosta=id_gosta))
 
 # @get('/gost/pregled')
 # def pregled_rezervacij_gosta():
 #     return template('gost_pregled.html')
 
-@get('/gost/pregled/<id_gosta>')
-def pregled_rezervacij_gosta(id_gosta):
-    # cur.execute("""
-    #      SELECT id, gost FROM rezervacije
-    #      INNER JOIN uporabnik ON rezervacije.gost = uporabnik.id
-    #      WHERE id = %s
-    #  """,
-    #  (id_gosta))
-    return template('gost_pregled.html',id_gosta=id_gosta)
+@get('/gost/pregled/')#<uporab>')
+@cookie_required
+def pregled_rezervacij_gosta(): 
+    #uporab = str(request.cookies.get('uporabnik'))
+    uporab = 'petja'
+    # id_gosta = int(request.cookies.get("id"))
+    cur.execute("SELECT id FROM uporabnik WHERE uporabnisko_ime = %s", [uporab])
+    id_gosta = int(cur.fetchall()[0][0])
+    cur.execute("""
+         SELECT pricetek_bivanja, st_nocitev, odrasli, otroci, uporabnisko_ime FROM rezervacije
+         INNER JOIN uporabnik ON rezervacije.gost = uporabnik.id
+         WHERE uporabnik.id = %s
+     """,
+      [id_gosta])
+    return template_user('gost_pregled.html', rezervacija = cur)#,id_gosta=id_gosta)
+    #return str(id_gosta)
 
 # REZERVACIJA
 # treba še popraviti
