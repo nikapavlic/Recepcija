@@ -1,4 +1,4 @@
-% rebase('base.html')
+% rebase('base.html', naslov='Predracun')
 <style>
 /* -------------------------------------
     GLOBAL
@@ -285,7 +285,7 @@ a {
                                         <table class="invoice">
                                             <tbody>
                                             <tr>
-                                                <td><b>Rezervacija št.: </b>{{id_rezervacije}}<br><b>Gostje: </b>{{gostje}}<br><b>Datum izdaje računa: </b>{{today}}</td>
+                                                <td><b>Rezervacija št.: </b>{{id}}<br><b>Gostje: </b>vstavi gosta<br><b>Datum izdaje računa: </b>vstavi datum</td>
                                             </tr>
                                             <tr>
                                                 <td>
@@ -300,28 +300,6 @@ a {
                                                                 <th>Količina</th>
                                                                 <th></th>
                                                                 <th>Cena</th>
-                                                            </tr>
-                                                        %for gost in gostje:  
-                                                            <tr>
-                                                                <td class="alignleft">{{gost.ime}} {{gost.priimek}}</td>
-                                                                <td>{{gost.dobi_naziv_in_ceno_nocitve()[0]}}</td>
-                                                                <td>{{gost.dobi_naziv_in_ceno_nocitve()[1]}}0</td>
-                                                                <td class="aligncenter">{{gost.dobi_turisticno_takso()}}0</td>
-                                                                <td></td>
-                                                                <td class="aligncenter">{{slovar_kolicin.get(gost)}}</td>
-                                                                <td></td>
-                                                                <td class="alignleftt">{{slovar_cen.get(gost)}}</td>
-                                                            </tr>
-                                                        %end
-                                                            <tr class="total">
-                                                                <td class="alignleft" width="80%">Skupaj:</td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td class="alignleft">{{sestevek}}€</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>

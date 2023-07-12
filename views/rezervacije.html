@@ -40,7 +40,10 @@
           </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             <a class="dropdown-item" href="#">Uredi</a>
-            <a class="dropdown-item" href="#">Predračun</a>
+            <form action="{{url('ustvari_predracun_get')}}" method="GET">
+              <button class="dropdown-item" type="submit">Predračun</button>
+            </form>
+            <!-- <a class="dropdown-item" href="#">Predračun</a> -->
             <a class="dropdown-item" href="#">Izstavi račun</a>
             <form method = "POST" action="/zbrisi-rezervacijo">
               <button class="dropdown-item" type="submit" name = "id_rezervacije" value = {{id}}>Zbriši</button>

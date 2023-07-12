@@ -262,7 +262,7 @@ def gost_rezervacija_post():
    # return zacetek_nocitve
     return "Uspešno dodano"
 
-   # v gost=manjka id gosta, ki dela rezervacijo, to bi lahko dodale v samo metodo zgoraj, ker je rezervacija itak vezana na uporabnika
+   # v gost=manjka id gosta, ki dela rezervacijo, to bi lahko dodale v samo metodo zgoraj, ker je rezervacija itak vezana na uporabnika, zaenkrat meče samo Petja kar na vse rezervacije ne glede na id
 
 
 @get('/registracija')
@@ -306,7 +306,18 @@ def zbrisi_rezervacijo():
     repo.zbrisi_rezervacijo(id_rezervacije)
     redirect(url('rezervacije_get'))
 
-
+#tole moras preuredit +  manjkajo cookiji za rezervacijo id, ker mora biti tista, ki jo kliknem
+@get('/rezervacija/predracun/')
+def ustvari_predracun_get():
+    #kaj rabim na predracunu:
+    # st_rezervacije
+    # st_dni
+    # ime gosta
+    # st. otrok in st. odraslih
+    # st_parcele
+    id_zacasni = 23
+    cur.execute("SELECT * FROM rezervacije WHERE id = %s", [id_zacasni])
+    return template('racun.html', rezervacija=cur)
 
 
 conn = psycopg2.connect(database=auth.db, host=auth.host, user=auth.user, password=auth.password, port=DB_PORT)
