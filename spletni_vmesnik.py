@@ -63,10 +63,9 @@ def cookie_required(f):
         
         return template("receptor_prijava.html", napaka="dekorator!")
 
-     
-        
-        
+           
     return decorated
+
 
 @get('/')
 def index():
@@ -137,8 +136,9 @@ def odjava():
     Odjavi uporabnika iz aplikacije. Pobriše piškotke o uporabniku in njegovi roli.
     """
     
-    response.delete_cookie("uporabnik")
+    response.delete_cookie("uporabnisko_ime")
     response.delete_cookie("rola")
+    response.delete_cookie("id")
     
     return template('zacetna_stran.html', napaka=None)
 
@@ -150,7 +150,7 @@ def prijava_receptor_get():
     return template("receptor_prijava.html")
 
 # kot zaposleni se lahko prijavimo npr. z emšom 1 in geslom 1234
-@post('/receptor/prijava') 
+@post('/receptor/prijava')                              #   POMOJE DA VSE KAR JE V TEJ FUNKCIJI ZAKOMENTIRAN SE LAHKO IZBRIŠE
 def prijava_receptor_post():
     uporabnisko_ime = request.forms.get('uporabnisko_ime')
     geslo = request.forms.get('geslo')
@@ -160,8 +160,8 @@ def prijava_receptor_post():
     try: 
         cur.execute("SELECT geslo FROM receptor WHERE uporabnisko_ime = %s", [uporabnisko_ime])
         hashBaza = cur.fetchall()[0][0]
-       # cur.execute("SELECT id FROM receptor WHERE uporabnisko_ime = %s", [uporabnisko_ime])
-       # id_receptorja = cur.fetchall()[0][0]
+        cur.execute("SELECT emso FROM receptor WHERE uporabnisko_ime = %s", [uporabnisko_ime])
+        id_receptorja = cur.fetchall()[0][0]
     except:
         hashBaza = None
     if hashBaza is None:
@@ -174,6 +174,7 @@ def prijava_receptor_post():
     #### NE DELAJO COOKIJI????
     response.set_cookie("uporabnisko_ime", uporabnisko_ime,  path = "/") #secret = "secret_value",, httponly = True)
     response.set_cookie("rola", "receptor",  path = "/")
+    response.set_cookie("id", str(id_receptorja),  path = "/")
     
 
     #redirect(url('izbira_pregleda'))
@@ -188,7 +189,7 @@ def prijava_gost_get():
 
 
 @post('/gost/prijava') 
-def prijava_gost_post():
+def prijava_gost_post():                          
     uporabnisko_ime = request.forms.get('uporabnisko_ime')
     geslo = request.forms.get('geslo')
     if uporabnisko_ime is None or geslo is None:
@@ -219,14 +220,14 @@ def prijava_gost_post():
 # def pregled_rezervacij_gosta():
 #     return template('gost_pregled.html')
 
-@get('/gost/pregled/')#<uporab>')
+@get('/gost/pregled/')#<uporab>')                   #   POMOJE DA VSE KAR JE V TEJ FUNKCIJI ZAKOMENTIRAN SE LAHKO IZBRIŠE
 @cookie_required
 def pregled_rezervacij_gosta(): 
-    #uporab = str(request.cookies.get('uporabnik'))
-    uporab = 'petja'
-    # id_gosta = int(request.cookies.get("id"))
-    cur.execute("SELECT id FROM uporabnik WHERE uporabnisko_ime = %s", [uporab])
-    id_gosta = int(cur.fetchall()[0][0])
+    #uporab = str(request.cookies.get('uporabnik'))     
+    #uporab = 'petja'
+    id_gosta = int(request.cookies.get("id"))
+    #cur.execute("SELECT id FROM uporabnik WHERE uporabnisko_ime = %s", [uporab])
+    #id_gosta = int(cur.fetchall()[0][0])
     cur.execute("""
          SELECT pricetek_bivanja, st_nocitev, odrasli, otroci, uporabnisko_ime FROM rezervacije
          INNER JOIN uporabnik ON rezervacije.gost = uporabnik.id
@@ -245,18 +246,20 @@ def gost_rezervacija_get():
     # id_gosta = cur.fetchone()
     return template("nova_rezervacija.html")
 
-@post('/gost/rezervacija/')
+@post('/gost/rezervacija/')                     #   POMOJE DA VSE KAR JE V TEJ FUNKCIJI ZAKOMENTIRAN SE LAHKO IZBRIŠE
 def gost_rezervacija_post():
     zacetek_nocitve = request.forms.zacetek_nocitve
     stevilo_dni = int(request.forms.stevilo_dni)
     stevilo_odraslih = int(request.forms.stevilo_odraslih)
     stevilo_otrok = int(request.forms.stevilo_otrok)
+
+    id_gosta = int(request.cookies.get("id"))
     #zacetek_nocitve = str(zacetek_nocitve)
     #zacetek_nocitve = '2023-09-01'
     #zacetek_nocitve = zacetek_nocitve.strftime("%Y-%m-%d")
     seznam_prostih_parcel = repo.dobi_proste_parcele(datum_nove = zacetek_nocitve, st_dni_nove=stevilo_dni, st_odraslih=stevilo_odraslih, st_otrok=stevilo_otrok)
 
-    rezervacija = rezervacije(pricetek_bivanja=zacetek_nocitve, st_nocitev=stevilo_dni, odrasli=stevilo_odraslih, otroci=stevilo_otrok, rezervirana_parcela=seznam_prostih_parcel, gost=17)
+    rezervacija = rezervacije(pricetek_bivanja=zacetek_nocitve, st_nocitev=stevilo_dni, odrasli=stevilo_odraslih, otroci=stevilo_otrok, rezervirana_parcela=seznam_prostih_parcel, gost=id_gosta)
 
     repo.dodaj_rezervacije(rezervacija)
    # return zacetek_nocitve
