@@ -55,6 +55,24 @@ class Repo:
         self.conn.commit()
         return uporabnik
     
+    def dodaj_receptor(self, receptor: receptor) -> receptor:
+        # ali je že v tabeli?
+        self.cur.execute("""
+            SELECT * from receptor
+            WHERE uporabnisko_ime = %s
+          """, (receptor.uporabnisko_ime,))
+
+        row = self.cur.fetchone()
+        if row:
+            receptor.id = row[0]
+            return receptor
+        
+        #nov uporabnik
+        self.cur.execute("""
+            INSERT INTO receptor (emso,uporabnisko_ime, geslo, ime, priimek)
+              VALUES (%s, %s, %s, %s, %s); """, (receptor.emso, receptor.uporabnisko_ime, receptor.geslo, receptor.ime, receptor.priimek))
+        self.conn.commit()
+        return receptor
 
     def tabela_rezervacije(self, prvi_dan) -> List[rezervacije]:
         #funkcija prikaze tabelo rezervacij, ki se zacnejo na 'prvi_dan'

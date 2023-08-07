@@ -29,7 +29,8 @@
                 <h2>Osnovne informacije</h2>
                 <p>Kamp se nahaja ob jezeru, kjer se je možno kopati.</p> 
                 <h3>Informativen izračun cene:</h3>
-                    <!-- <form action="{{url('registracija_post')}}" method="post" class="row-g3 mx-2"></form> -->
+                    <form action="/izracun" method="post" class="row-g3 mx-2">
+                    
                     <div class="col-6">
                         <label for="st_nocitev" class="form-label my-3">Število nočitev:</label>
                         <input id="st_nocitev" name="st_nocitev" type="integer" class="form-control" />
@@ -42,11 +43,13 @@
                         <label for="otroci" class="form-label my-3">Število otrok:</label>
                         <input id="otroci" name="otroci" type="integer" class="form-control" />
                     </div>
-                
                 <div class="col-12 my-3 d-flex justify-content-start">
-                    <button class="btn btn-outline-dark" type="submit">Potrdi</button>
+                    <button class="btn btn-outline-dark" type="submit">Izračun</button>
                 </div>
-            
+                </form>
+                <div class="mt-3">
+                    <p>Cena: &euro;<span id="cena">0</span></p>
+                </div>
             </div>
             <div class="d-grid gap-2 col-3 mx-auto" style="align-items: center;">
                 <p>V kolikor želite narediti rezervacijo se prijavite.</p>

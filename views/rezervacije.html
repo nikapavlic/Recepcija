@@ -6,8 +6,12 @@
   <td><button class="btn btn-light btn-outline-dark float-right" type="submit">Odjava</button></td>
 </form>
 <span class="badge text-bg-primary float-right">{{uporabnik}}</span>
+<span class="badge text-bg-primary float-right">{{rola}}</span>
 
+%if str(uporabnik) == 'receptor':
+  <a class="btn btn-light btn-outline-dark float-right" href="/receptorji">Vsi receptorji</a>
 
+%end
 
     <table class="table table-striped">
       <tr>

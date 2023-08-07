@@ -72,6 +72,13 @@ def index():
     return template('zacetna_stran.html')
     #return 'Začetna stran'
 
+@post('/izracun')
+def izracun():
+    st_nocitev = int(request.forms.st_nocitev)
+    odrasli = int(request.forms.odrasli)
+    otroci = int(request.forms.otroci)
+    cena = (odrasli*12+otroci*7)*st_nocitev
+    return template('zacetna_stran.html', cena=cena)
 
 @get('/static/<filename:path>')
 def static(filename):
@@ -229,9 +236,10 @@ def pregled_rezervacij_gosta():
     #cur.execute("SELECT id FROM uporabnik WHERE uporabnisko_ime = %s", [uporab])
     #id_gosta = int(cur.fetchall()[0][0])
     cur.execute("""
-         SELECT pricetek_bivanja, st_nocitev, odrasli, otroci, uporabnisko_ime FROM rezervacije
+         SELECT pricetek_bivanja, st_nocitev, odrasli, otroci, uporabnisko_ime, rezervacije.id FROM rezervacije
          INNER JOIN uporabnik ON rezervacije.gost = uporabnik.id
          WHERE uporabnik.id = %s
+         ORDER BY pricetek_bivanja
      """,
       [id_gosta])
     return template_user('gost_pregled.html', rezervacija = cur)#,id_gosta=id_gosta)
@@ -263,10 +271,26 @@ def gost_rezervacija_post():
 
     repo.dodaj_rezervacije(rezervacija)
    # return zacetek_nocitve
-    return "Uspešno dodano"
+    #return "Uspešno dodano"
+    redirect(url('pregled_rezervacij_gosta'))
 
    # v gost=manjka id gosta, ki dela rezervacijo, to bi lahko dodale v samo metodo zgoraj, ker je rezervacija itak vezana na uporabnika, zaenkrat meče samo Petja kar na vse rezervacije ne glede na id
+@get('/dodaj_receptorja')
+def dodaj_receptorja_get():
+    return template_user('nov_receptor.html')
 
+
+@post('/dodaj_receptorja')
+def dodaj_receptorja_post():
+    emso = request.forms.emso
+    uporabnisko_ime = request.forms.uporabnisko_ime
+    geslo = request.forms.geslo
+    ime = request.forms.ime
+    priimek = request.forms.priimek
+
+    receptor1 = receptor(emso=emso, uporabnisko_ime=uporabnisko_ime, geslo=geslo, ime=ime, priimek=priimek)
+    repo.dodaj_receptor(receptor1)
+    redirect(url('receptorji'))
 
 @get('/registracija')
 def registracija_get():
@@ -300,6 +324,7 @@ def rezervacije_get():#,id_receptorja receptor):
     cur.execute("""
         SELECT rezervacije.id,  pricetek_bivanja, st_nocitev,odrasli,otroci, rezervirana_parcela, gost, ime, priimek FROM rezervacije
         LEFT JOIN uporabnik ON uporabnik.id = rezervacije.gost
+        ORDER BY pricetek_bivanja
     """)
     return template_user('rezervacije.html', rezervacija = cur)
 
@@ -307,7 +332,11 @@ def rezervacije_get():#,id_receptorja receptor):
 def zbrisi_rezervacijo():
     id_rezervacije = request.forms.id_rezervacije
     repo.zbrisi_rezervacijo(id_rezervacije)
-    redirect(url('rezervacije_get'))
+    rola = str(request.cookies.get("rola"))
+    if rola == 'receptor':
+        redirect(url('rezervacije_get'))
+    else:
+        redirect(url('pregled_rezervacij_gosta'))
 
 #tole moras preuredit +  manjkajo cookiji za rezervacijo id, ker mora biti tista, ki jo kliknem
 @get('/rezervacija/predracun/')
