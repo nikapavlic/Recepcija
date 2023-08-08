@@ -43,8 +43,8 @@
           </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             <a class="dropdown-item" href="#">Uredi</a>
-            <form action="{{url('ustvari_predracun_get')}}" method="GET">
-              <button class="dropdown-item" type="submit">Predračun</button>
+            <form method = "POST" action="/rezervacija/predracun/">
+              <button class="dropdown-item" type="submit" name = "id_rez" value = {{id}}>Predračun</button>
             </form>
             <!-- <a class="dropdown-item" href="#">Predračun</a> -->
             <form method = "POST" action="/rezervacija/racun/">

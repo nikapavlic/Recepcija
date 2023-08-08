@@ -347,26 +347,23 @@ def zbrisi_rezervacijo():
     else:
         redirect(url('pregled_rezervacij_gosta'))
 
-#tole moras preuredit +  manjkajo cookiji za rezervacijo id, ker mora biti tista, ki jo kliknem
-@get('/rezervacija/predracun/')
+
+@post('/rezervacija/predracun/')
 @cookie_required
-def ustvari_predracun_get():
-    #id_rez = int(request.cookies.get("id"))
-    #kaj rabim na predracunu:
-    # st_rezervacije
-    # st_dni
-    # ime gosta
-    # st. otrok in st. odraslih
-    # st_parcele
+def ustvari_predracun_post():
+    id_rez = request.forms.id_rez
+    redirect(url('ustvari_predracun_get', id=id_rez))
 
-    #cur.execute("SELECT id, pricetek_bivanja, st_nocitev, odrasli, otroci FROM rezervacije WHERE id = 4")
 
-    #id_rez = request.forms.id_rez
+@get('/rezervacija/predracun/<id>')
+@cookie_required
+def ustvari_predracun_get(id):
     receptor = request.cookies.get("uporabnisko_ime")
-    id_rez = 14
+    id_rez = id
     cur.execute("SELECT id, pricetek_bivanja, st_nocitev, odrasli, otroci FROM rezervacije WHERE id = %s", (id_rez,))
 
-    return template('racun.html', rezervacija=cur, receptor=receptor)
+    return template('predracun.html', rezervacija=cur, receptor=receptor)
+
 
 @get('/rezervacija/racun/<id>')
 @cookie_required
