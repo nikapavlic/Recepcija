@@ -12,7 +12,6 @@
   <a class="btn btn-light btn-outline-dark float-right" href="/receptorji">Vsi receptorji</a>
 
 %end
-
     <table class="table table-striped">
       <tr>
         <th>ID rezervacije</th>
@@ -48,7 +47,9 @@
               <button class="dropdown-item" type="submit">Predračun</button>
             </form>
             <!-- <a class="dropdown-item" href="#">Predračun</a> -->
-            <a class="dropdown-item" href="#">Izstavi račun</a>
+            <form method = "POST" action="/rezervacija/racun/">
+              <button class="dropdown-item" type="submit" name = "id_rez" value = {{id}}>Izstavi račun</button>
+            </form>
             <form method = "POST" action="/zbrisi-rezervacijo">
               <button class="dropdown-item" type="submit" name = "id_rezervacije" value = {{id}}>Zbriši</button>
             </form>

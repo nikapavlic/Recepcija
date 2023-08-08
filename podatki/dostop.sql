@@ -21,4 +21,5 @@ GRANT DELETE ON rezervacije TO javnost;
 GRANT INSERT ON uporabnik TO javnost;
 GRANT INSERT ON rezervacije TO javnost;
 GRANT INSERT ON receptor TO javnost;
+GRANT INSERT ON racun TO javnost;
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO javnost;

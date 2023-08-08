@@ -137,6 +137,10 @@ class Repo:
         self.conn.commit()
         return 
 #         
+    def ustvari_racun(self, id_rez, emso):
+        self.cur.execute("""INSERT INTO racun (id_rezervacije, izdajatelj) VALUES (%s, %s); """, (id_rez, emso))
+        self.conn.commit()
+        return
 
     
 

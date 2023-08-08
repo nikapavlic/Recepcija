@@ -30,7 +30,12 @@ repo=Repo()
 #za debugiranje
 #debuger(True)
 
-
+def password_hash(s):
+    """Vrni SHA-512 hash danega UTF-8 niza. Gesla vedno spravimo v bazo
+       kodirana s to funkcijo."""
+    h = hashlib.sha512()
+    h.update(s.encode('utf-8'))
+    return h.hexdigest()
 
 # @get('/')
 # def index():
@@ -156,19 +161,19 @@ def odjava():
 def prijava_receptor_get():
     return template("receptor_prijava.html")
 
-# kot zaposleni se lahko prijavimo npr. z emšom 1 in geslom 1234
 @post('/receptor/prijava')                              #   POMOJE DA VSE KAR JE V TEJ FUNKCIJI ZAKOMENTIRAN SE LAHKO IZBRIŠE
 def prijava_receptor_post():
     uporabnisko_ime = request.forms.get('uporabnisko_ime')
+    #geslo = password_hash(request.forms.get('geslo'))
     geslo = request.forms.get('geslo')
     if uporabnisko_ime is None or geslo is None:
         redirect(url('prijava_receptor_get'))
     hashBaza = None
     try: 
-        cur.execute("SELECT geslo FROM receptor WHERE uporabnisko_ime = %s", [uporabnisko_ime])
-        hashBaza = cur.fetchall()[0][0]
-        cur.execute("SELECT emso FROM receptor WHERE uporabnisko_ime = %s", [uporabnisko_ime])
-        id_receptorja = cur.fetchall()[0][0]
+        hashBaza = cur.execute("SELECT geslo FROM receptor WHERE uporabnisko_ime = %s", [uporabnisko_ime])
+        hashBaza = cur.fetchone()[0]
+        id_receptorja = cur.execute("SELECT emso FROM receptor WHERE uporabnisko_ime = %s", [uporabnisko_ime])
+        id_receptorja = cur.fetchall()[0]
     except:
         hashBaza = None
     if hashBaza is None:
@@ -178,7 +183,6 @@ def prijava_receptor_post():
       #  nastaviSporocilo('Nekaj je šlo narobe.') 
         redirect(url('prijava_receptor_get'))
         return
-    #### NE DELAJO COOKIJI????
     response.set_cookie("uporabnisko_ime", uporabnisko_ime,  path = "/") #secret = "secret_value",, httponly = True)
     response.set_cookie("rola", "receptor",  path = "/")
     response.set_cookie("id", str(id_receptorja),  path = "/")
@@ -198,7 +202,7 @@ def prijava_gost_get():
 @post('/gost/prijava') 
 def prijava_gost_post():                          
     uporabnisko_ime = request.forms.get('uporabnisko_ime')
-    geslo = request.forms.get('geslo')
+    geslo = password_hash(request.forms.get('geslo'))
     if uporabnisko_ime is None or geslo is None:
         redirect(url('prijava_gost_get'))
     hashBaza = None
@@ -249,12 +253,14 @@ def pregled_rezervacij_gosta():
 # treba še popraviti
 
 @get('/gost/rezervacija/')
+@cookie_required
 def gost_rezervacija_get():
     #cur.execute("""SELECT id FROM uporabnik WHERE id = %s""", (id, ))
     # id_gosta = cur.fetchone()
     return template("nova_rezervacija.html")
 
-@post('/gost/rezervacija/')                     #   POMOJE DA VSE KAR JE V TEJ FUNKCIJI ZAKOMENTIRAN SE LAHKO IZBRIŠE
+@post('/gost/rezervacija/')
+@cookie_required                     #   POMOJE DA VSE KAR JE V TEJ FUNKCIJI ZAKOMENTIRAN SE LAHKO IZBRIŠE
 def gost_rezervacija_post():
     zacetek_nocitve = request.forms.zacetek_nocitve
     stevilo_dni = int(request.forms.stevilo_dni)
@@ -284,7 +290,7 @@ def dodaj_receptorja_get():
 def dodaj_receptorja_post():
     emso = request.forms.emso
     uporabnisko_ime = request.forms.uporabnisko_ime
-    geslo = request.forms.geslo
+    geslo = password_hash(request.forms.geslo)
     ime = request.forms.ime
     priimek = request.forms.priimek
 
@@ -303,7 +309,7 @@ def registracija_get():
 @post('/registracija')
 def registracija_post():
     uporabnisko_ime = request.forms.uporabnisko_ime
-    geslo = request.forms.geslo
+    geslo = password_hash(request.forms.geslo)
     ime = request.forms.ime
     priimek = request.forms.priimek
     rojstvo = request.forms.rojstvo
@@ -315,20 +321,23 @@ def registracija_post():
 
 
 @get('/rezervacije')
-@cookie_required #Če to odkomentiraš kr naenkrat pri prijavi ne dela, ker se cookiji očitno ne prenesejo naprej in potem ta funkcija ne dela
-def rezervacije_get():#,id_receptorja receptor):
+@cookie_required 
+def rezervacije_get():
     #receptor = request.get_cookie("uporabnisko_ime")
     #if receptor == None:
     #    template_user('receptor_prijava.html')
     #else:
+#    emso = request.cookies.get("uporabnisko_ime")
     cur.execute("""
         SELECT rezervacije.id,  pricetek_bivanja, st_nocitev,odrasli,otroci, rezervirana_parcela, gost, ime, priimek FROM rezervacije
         LEFT JOIN uporabnik ON uporabnik.id = rezervacije.gost
         ORDER BY pricetek_bivanja
     """)
+    #return template_user('rezervacije.html', rezervacija = cur, emso=emso)
     return template_user('rezervacije.html', rezervacija = cur)
 
 @post('/zbrisi-rezervacijo')
+@cookie_required
 def zbrisi_rezervacijo():
     id_rezervacije = request.forms.id_rezervacije
     repo.zbrisi_rezervacijo(id_rezervacije)
@@ -340,17 +349,44 @@ def zbrisi_rezervacijo():
 
 #tole moras preuredit +  manjkajo cookiji za rezervacijo id, ker mora biti tista, ki jo kliknem
 @get('/rezervacija/predracun/')
+@cookie_required
 def ustvari_predracun_get():
+    #id_rez = int(request.cookies.get("id"))
     #kaj rabim na predracunu:
     # st_rezervacije
     # st_dni
     # ime gosta
     # st. otrok in st. odraslih
     # st_parcele
-    id_zacasni = 23
-    cur.execute("SELECT * FROM rezervacije WHERE id = %s", [id_zacasni])
-    return template('racun.html', rezervacija=cur)
 
+    #cur.execute("SELECT id, pricetek_bivanja, st_nocitev, odrasli, otroci FROM rezervacije WHERE id = 4")
+
+    #id_rez = request.forms.id_rez
+    receptor = request.cookies.get("uporabnisko_ime")
+    id_rez = 14
+    cur.execute("SELECT id, pricetek_bivanja, st_nocitev, odrasli, otroci FROM rezervacije WHERE id = %s", (id_rez,))
+
+    return template('racun.html', rezervacija=cur, receptor=receptor)
+
+@get('/rezervacija/racun/')
+@cookie_required
+def ustvari_racun_get():
+    receptor = request.cookies.get("uporabnisko_ime")
+#    id_rez = request.forms.id_rez KAKO DOBIT ID REZERVACIJE NAJBOLJ ELEGANTNO
+    id_rez = 38
+    cur.execute("SELECT id, pricetek_bivanja, st_nocitev, odrasli, otroci FROM rezervacije WHERE id = %s", (id_rez,))
+
+    return template('racun.html', rezervacija=cur, receptor=receptor)
+
+@post('/rezervacija/racun/')
+@cookie_required
+def ustvari_racun_post():
+    id_rez = request.forms.id_rez
+    emso = request.cookies.get("id")
+    emso = str(emso[2:-2])
+    repo.ustvari_racun(id_rez, emso)
+    redirect(url('ustvari_racun_get'))
+# fajn bi bilo narediti, da se gumb ugasne ko kliknemo na njega, da se računi v database nebi ponavljali, mogoče, da bi se te rezervacije zapisovale v tabelo rezervacije zgodovina in se iz tabele rezervacije brisale
 
 conn = psycopg2.connect(database=auth.db, host=auth.host, user=auth.user, password=auth.password, port=DB_PORT)
 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor) 
