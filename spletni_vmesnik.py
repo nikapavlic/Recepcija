@@ -368,12 +368,12 @@ def ustvari_predracun_get():
 
     return template('racun.html', rezervacija=cur, receptor=receptor)
 
-@get('/rezervacija/racun/')
+@get('/rezervacija/racun/<id>')
 @cookie_required
-def ustvari_racun_get():
+def ustvari_racun_get(id):
     receptor = request.cookies.get("uporabnisko_ime")
 #    id_rez = request.forms.id_rez KAKO DOBIT ID REZERVACIJE NAJBOLJ ELEGANTNO
-    id_rez = 38
+    id_rez = id
     cur.execute("SELECT id, pricetek_bivanja, st_nocitev, odrasli, otroci FROM rezervacije WHERE id = %s", (id_rez,))
 
     return template('racun.html', rezervacija=cur, receptor=receptor)
@@ -385,7 +385,7 @@ def ustvari_racun_post():
     emso = request.cookies.get("id")
     emso = str(emso[2:-2])
     repo.ustvari_racun(id_rez, emso)
-    redirect(url('ustvari_racun_get'))
+    redirect(url('ustvari_racun_get', id=id_rez))
 # fajn bi bilo narediti, da se gumb ugasne ko kliknemo na njega, da se računi v database nebi ponavljali, mogoče, da bi se te rezervacije zapisovale v tabelo rezervacije zgodovina in se iz tabele rezervacije brisale
 
 conn = psycopg2.connect(database=auth.db, host=auth.host, user=auth.user, password=auth.password, port=DB_PORT)
