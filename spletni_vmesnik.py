@@ -359,31 +359,60 @@ def ustvari_predracun_post():
 @cookie_required
 def ustvari_predracun_get(id):
     receptor = request.cookies.get("uporabnisko_ime")
+    cur.execute("SELECT ime, priimek FROM receptor WHERE uporabnisko_ime = %s", (receptor,))
+    podatki=cur.fetchone()
+    ime = podatki[0]
+    priimek= podatki[1]
     id_rez = id
     cur.execute("SELECT id, pricetek_bivanja, st_nocitev, odrasli, otroci FROM rezervacije WHERE id = %s", (id_rez,))
 
-    return template('predracun.html', rezervacija=cur, receptor=receptor)
+    return template('predracun.html', rezervacija=cur, receptor=receptor, ime=ime, priimek=priimek)
 
 
 @get('/rezervacija/racun/<id>')
 @cookie_required
 def ustvari_racun_get(id):
     receptor = request.cookies.get("uporabnisko_ime")
+    cur.execute("SELECT ime, priimek FROM receptor WHERE uporabnisko_ime = %s", (receptor,))
+    podatki=cur.fetchone()
+    ime = podatki[0]
+    priimek= podatki[1]
 #    id_rez = request.forms.id_rez KAKO DOBIT ID REZERVACIJE NAJBOLJ ELEGANTNO
     id_rez = id
     cur.execute("SELECT id, pricetek_bivanja, st_nocitev, odrasli, otroci FROM rezervacije WHERE id = %s", (id_rez,))
 
-    return template('racun.html', rezervacija=cur, receptor=receptor)
+    return template('racun.html', rezervacija=cur, receptor=receptor, ime=ime, priimek=priimek)
 
 @post('/rezervacija/racun/')
 @cookie_required
 def ustvari_racun_post():
     id_rez = request.forms.id_rez
+#    emso = request.cookies.get("id")
+#    emso = str(emso[2:-2])
+#    repo.ustvari_racun(id_rez, emso)
+    redirect(url('ustvari_racun_get', id=id_rez))
+# fajn bi bilo narediti, da se gumb ugasne ko kliknemo na njega, da se računi v database nebi ponavljali, mogoče, da bi se te rezervacije zapisovale v tabelo rezervacije zgodovina in se iz tabele rezervacije brisale
+
+@get('/rezervacija/izdaj_racun/<id>')
+@cookie_required
+def izdaj_racun_get(id):
+    receptor = request.cookies.get("uporabnisko_ime")
+#    id_rez = request.forms.id_rez KAKO DOBIT ID REZERVACIJE NAJBOLJ ELEGANTNO
+    id_rez = id
+    cur.execute("SELECT id, pricetek_bivanja, st_nocitev, odrasli, otroci FROM rezervacije WHERE id = %s", (id_rez,))
+    redirect(url('rezervacije_get'))
+
+#    return template_user('rezervacije.html', rezervacija=cur, receptor=receptor)
+
+@post('/rezervacija/izdaj_racun/')
+@cookie_required
+def izdaj_racun_post():
+    id_rez = request.forms.id_rez
     emso = request.cookies.get("id")
     emso = str(emso[2:-2])
     repo.ustvari_racun(id_rez, emso)
-    redirect(url('ustvari_racun_get', id=id_rez))
-# fajn bi bilo narediti, da se gumb ugasne ko kliknemo na njega, da se računi v database nebi ponavljali, mogoče, da bi se te rezervacije zapisovale v tabelo rezervacije zgodovina in se iz tabele rezervacije brisale
+    redirect(url('izdaj_racun_get', id=id_rez))
+
 
 conn = psycopg2.connect(database=auth.db, host=auth.host, user=auth.user, password=auth.password, port=DB_PORT)
 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor) 

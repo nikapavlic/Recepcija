@@ -334,7 +334,7 @@ a {
                                 </tr>
                                 <tr>
                                     <td class="content-block">
-                                        <a><b>Fakturiral: </b>{{receptor}}</a>
+                                        <a><b>Fakturiral: </b>{{ime}} {{priimek}}</a>
                                     </td>
                                 </tr>
                                 <tr>
@@ -350,6 +350,14 @@ a {
                     <table width="100%">
                         <tbody><tr>
                             <td class="aligncenter content-block">Vprašanja? Email: <a href="mailto:">kamp2001@company.inc</a></td>
+                        </tr>
+                    </tbody></table>
+                    <table width="100%">
+                        <tbody><tr>
+                        <form method = "POST" action="/rezervacija/izdaj_racun/">
+                            <div class="col-12 my-3 d-flex justify-content-start">
+                                <button class="btn btn-outline-dark" type="submit" name = "id_rez" value = {{id}}>Izstavi račun</button>
+                            </div>
                         </tr>
                     </tbody></table>
                 </div></div>
