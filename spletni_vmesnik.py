@@ -400,7 +400,7 @@ def izdaj_racun_get(id):
 #    id_rez = request.forms.id_rez KAKO DOBIT ID REZERVACIJE NAJBOLJ ELEGANTNO
     id_rez = id
     cur.execute("SELECT id, pricetek_bivanja, st_nocitev, odrasli, otroci FROM rezervacije WHERE id = %s", (id_rez,))
-    redirect(url('rezervacije_get'))
+    redirect(url('pregled_racunov_get'))
 
 #    return template_user('rezervacije.html', rezervacija=cur, receptor=receptor)
 
@@ -412,6 +412,19 @@ def izdaj_racun_post():
     emso = str(emso[2:-2])
     repo.ustvari_racun(id_rez, emso)
     redirect(url('izdaj_racun_get', id=id_rez))
+
+## PREGLED RAČUNOV
+@get('/racuni')
+@cookie_required 
+def pregled_racunov_get():
+    cur.execute("""
+        SELECT racun.id AS id_racuna, racun.id_rezervacije AS id_rezervacije, receptor.ime AS ime_receptorja, receptor.priimek AS priimek_receptorja, uporabnik.ime AS ime_uporabnika , uporabnik.priimek AS priimek_uporabnika, rezervacije.odrasli AS odrasli, rezervacije.otroci AS otroci, rezervacije.st_nocitev AS st_nocitev FROM racun 
+                INNER JOIN rezervacije ON id_rezervacije = rezervacije.id
+                INNER JOIN receptor ON racun.izdajatelj = receptor.emso
+                INNER JOIN uporabnik ON uporabnik.id = rezervacije.gost
+                ORDER BY id_racuna
+    """)
+    return template_user('racuni.html', racuni=cur)
 
 
 conn = psycopg2.connect(database=auth.db, host=auth.host, user=auth.user, password=auth.password, port=DB_PORT)

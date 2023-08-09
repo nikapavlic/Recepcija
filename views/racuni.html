@@ -1,0 +1,36 @@
+% rebase('base.html', naslov='Racuni')
+
+<form action="{{url('odjava')}}" method="get">
+    <td><button class="btn btn-light btn-outline-dark float-right" type="submit">Odjava</button></td>
+  </form>
+  <span class="badge text-bg-primary float-right">{{uporabnik}}</span>
+  <span class="badge text-bg-primary float-right">{{rola}}</span>
+
+  <table width="100%">
+    <tbody><tr>
+    <form action="{{url('rezervacije_get')}}" method="get" class="row-g3 mx-2">
+        <div class="col-12 my-3 d-flex justify-content-start">
+            <button class="btn btn-outline-dark" type="submit">Nazaj na pregled</button>
+        </div>
+    </tr>
+</tbody></table>
+
+  <table class="table table-striped">
+    <tr>
+      <th>ID racuna</th>  
+      <th>ID rezervacije</th>
+      <th>Izdal</th>
+      <th>Gost</th>
+      <th>Znesek</th>
+
+    </tr>
+    %for id_racuna, id_rezervacije, ime_receptorja, priimek_receptorja, ime_uporabnika, priimek_uporabnika, odrasli, otroci, st_nocitev in racuni:
+    <tr>
+      <td>{{id_racuna}}</td>
+      <td>{{id_rezervacije}}</td> 
+      <td>{{ime_receptorja}} {{priimek_receptorja}}</td>
+      <td>{{ime_uporabnika}} {{priimek_uporabnika}}</td>
+      <td>{{(odrasli*12 + otroci*7)*st_nocitev}} &euro;</td>
+    </tr>
+    %end
+  </table>
