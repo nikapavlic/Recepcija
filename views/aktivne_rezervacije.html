@@ -1,4 +1,4 @@
-% rebase('base.html', naslov='Rezervacije')
+% rebase('base.html', naslov='Aktivne rezervacije')
 <!-- <div class="container d-flex justify-content-end">
   <div class="row">
     <div class="col-1">
@@ -17,10 +17,10 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
+      <li class="nav-item active">
         <a class="nav-link" href="/aktivne-rezervacije">Aktivne rezervacije<span class="sr-only">(current)</span></a>
       </li>
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" href="/rezervacije">Vse rezervacije</a>
       </li>
       <li class="nav-item">
@@ -28,10 +28,10 @@
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Dropdown
+          Drugo
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="/uporabniki">Pregled uporabnikov</a>
+        <a class="dropdown-item" href="/uporabniki">Pregled uporabnikov</a>
           <a class="dropdown-item" href="/parcele">Pregled parcel</a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="#">Something else here</a>

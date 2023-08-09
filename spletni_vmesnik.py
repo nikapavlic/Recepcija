@@ -47,7 +47,7 @@ def receptorji():
         SELECT emso, ime, priimek
         FROM receptor
     """)
-    return template('receptorji.html', receptorji=cur)
+    return template_user('receptorji.html', receptorji=cur)
 
 # Način prijave:
 # @get('/izbira_uporabnika')
@@ -189,7 +189,7 @@ def prijava_receptor_post():
     
 
     #redirect(url('izbira_pregleda'))
-    redirect(url('rezervacije_get'))#, id_receptorja = id_receptorja, receptor = True)
+    redirect(url('aktivne_rezervacije_get'))#, id_receptorja = id_receptorja, receptor = True)
     #ck = request.get_cookie("uporabnik")
     #rl = request.get_cookie("rola")
     #return #str(ck)
@@ -347,6 +347,22 @@ def zbrisi_rezervacijo():
     else:
         redirect(url('pregled_rezervacij_gosta'))
 
+@get('/aktivne-rezervacije')
+@cookie_required 
+def aktivne_rezervacije_get():
+    #receptor = request.get_cookie("uporabnisko_ime")
+    #if receptor == None:
+    #    template_user('receptor_prijava.html')
+    #else:
+#    emso = request.cookies.get("uporabnisko_ime")
+    cur.execute("""
+        SELECT rezervacije.id,  pricetek_bivanja, st_nocitev,odrasli,otroci, rezervirana_parcela, gost, ime, priimek FROM rezervacije
+        LEFT JOIN uporabnik ON uporabnik.id = rezervacije.gost
+        WHERE pricetek_bivanja <= NOW() AND NOW() <= pricetek_bivanja + st_nocitev
+        ORDER BY pricetek_bivanja
+    """)
+    #return template_user('rezervacije.html', rezervacija = cur, emso=emso)
+    return template_user('aktivne_rezervacije.html', rezervacija = cur)
 
 @post('/rezervacija/predracun/')
 @cookie_required
@@ -426,9 +442,34 @@ def pregled_racunov_get():
     """)
     return template_user('racuni.html', racuni=cur)
 
+#PREGLED UPORABNIKOV
+@get('/uporabniki')
+@cookie_required
+def pregled_uporabnikov_get():
+    cur.execute("""
+        SELECT id, uporabnisko_ime, ime, priimek, rojstvo, nacionalnost FROM uporabnik
+                """)
+    return template_user('uporabniki.html', uporabniki = cur)
+
+#PREGLED PARCEL
+@get('/parcele')
+@cookie_required
+def pregled_parcel():
+    cur.execute("""
+                SELECT parcela.id, uporabnik.ime, uporabnik.priimek, rezervacije.id FROM parcela
+LEFT JOIN rezervacije ON parcela.id = rezervacije.rezervirana_parcela
+LEFT JOIN uporabnik ON gost = uporabnik.id
+WHERE pricetek_bivanja <= NOW() AND NOW() <= pricetek_bivanja + st_nocitev;
+                """)
+    cur1.execute("""SELECT id, st_gostov FROM parcela
+                ORDER BY id""")
+    sz = cur.fetchall()
+    seznam = [value[0] for value in sz]
+    return template_user('parcele.html', zasedene = cur, parcele = cur1, seznam = seznam)
 
 conn = psycopg2.connect(database=auth.db, host=auth.host, user=auth.user, password=auth.password, port=DB_PORT)
 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor) 
+cur1 = conn.cursor(cursor_factory=psycopg2.extras.DictCursor) 
 
 run(host='localhost', port=SERVER_PORT, reloader=RELOADER)
 

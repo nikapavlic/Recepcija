@@ -48,5 +48,9 @@ CREATE TABLE racun(
     izdajatelj TEXT REFERENCES receptor(emso)
 );
 
-
+CREATE TABLE storitve(
+    ID SERIAL PRIMARY KEY,
+    storitev TEXT,
+    cena INTEGER
+);
 
