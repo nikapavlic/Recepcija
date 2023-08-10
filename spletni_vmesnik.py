@@ -272,8 +272,9 @@ def gost_rezervacija_post():
     #zacetek_nocitve = '2023-09-01'
     #zacetek_nocitve = zacetek_nocitve.strftime("%Y-%m-%d")
     seznam_prostih_parcel = repo.dobi_proste_parcele(datum_nove = zacetek_nocitve, st_dni_nove=stevilo_dni, st_odraslih=stevilo_odraslih, st_otrok=stevilo_otrok)
+    prosta_parcela = seznam_prostih_parcel[0]
 
-    rezervacija = rezervacije(pricetek_bivanja=zacetek_nocitve, st_nocitev=stevilo_dni, odrasli=stevilo_odraslih, otroci=stevilo_otrok, rezervirana_parcela=seznam_prostih_parcel, gost=id_gosta)
+    rezervacija = rezervacije(pricetek_bivanja=zacetek_nocitve, st_nocitev=stevilo_dni, odrasli=stevilo_odraslih, otroci=stevilo_otrok, rezervirana_parcela=prosta_parcela, gost=id_gosta)
 
     repo.dodaj_rezervacije(rezervacija)
    # return zacetek_nocitve
@@ -481,7 +482,7 @@ def static(filename):
     return static_file(filename, root=static_dir)
 
 
-# spreminjanje stevila ljudi na rezervaciji, spreminjanje datumov
+# spreminjanje stevila ljudi na rezervaciji
 # @get('/urejanje/<id>')
 # @cookie_required
 # def urejanje_rezervacije_get(id):
@@ -493,7 +494,7 @@ def static(filename):
 #                 WHERE id = %s""", (id_rez,))
 #     return template_user('urejanje_rezervacije.html', rezervacija=cur)
 
-#    return template_user('rezervacije.html', rezervacija=cur, receptor=receptor)
+#    #return template_user('rezervacije.html', rezervacija=cur, receptor=receptor)
 
 # @post('/urejanje/')
 # @cookie_required
