@@ -102,7 +102,10 @@
               Možnosti
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" href="#">Uredi</a>
+              <!-- <a class="dropdown-item" href="#">Uredi</a> -->
+              <form method = "POST" action="/urejanje/">
+                <button class="dropdown-item" type="submit" name = "id_rez" value = {{id}}>Uredi</button>
+              </form>
               <form method = "POST" action="/rezervacija/predracun/">
                 <button class="dropdown-item" type="submit" name = "id_rez" value = {{id}}>Predračun</button>
               </form>
