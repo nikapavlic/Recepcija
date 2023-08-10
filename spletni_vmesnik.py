@@ -333,8 +333,12 @@ def rezervacije_get():
         LEFT JOIN uporabnik ON uporabnik.id = rezervacije.gost
         ORDER BY pricetek_bivanja
     """)
+    cur1.execute("""SELECT id_rezervacije FROM racun""")
+    sz = cur1.fetchall()
+    seznam = [value[0] for value in sz]
+
     #return template_user('rezervacije.html', rezervacija = cur, emso=emso)
-    return template_user('rezervacije.html', rezervacija = cur)
+    return template_user('rezervacije.html', rezervacija = cur, poravnani = seznam)
 
 @post('/zbrisi-rezervacijo')
 @cookie_required
@@ -361,8 +365,11 @@ def aktivne_rezervacije_get():
         WHERE pricetek_bivanja <= NOW() AND NOW() <= pricetek_bivanja + st_nocitev
         ORDER BY pricetek_bivanja
     """)
+    cur1.execute("""SELECT id_rezervacije FROM racun""")
+    sz = cur1.fetchall()
+    seznam = [value[0] for value in sz]
     #return template_user('rezervacije.html', rezervacija = cur, emso=emso)
-    return template_user('aktivne_rezervacije.html', rezervacija = cur)
+    return template_user('aktivne_rezervacije.html', rezervacija = cur, poravnani = seznam)
 
 @post('/rezervacija/predracun/')
 @cookie_required
@@ -457,9 +464,9 @@ def pregled_uporabnikov_get():
 def pregled_parcel():
     cur.execute("""
                 SELECT parcela.id, uporabnik.ime, uporabnik.priimek, rezervacije.id FROM parcela
-LEFT JOIN rezervacije ON parcela.id = rezervacije.rezervirana_parcela
-LEFT JOIN uporabnik ON gost = uporabnik.id
-WHERE pricetek_bivanja <= NOW() AND NOW() <= pricetek_bivanja + st_nocitev;
+                LEFT JOIN rezervacije ON parcela.id = rezervacije.rezervirana_parcela
+                LEFT JOIN uporabnik ON gost = uporabnik.id
+                WHERE pricetek_bivanja <= NOW() AND NOW() <= pricetek_bivanja + st_nocitev;
                 """)
     cur1.execute("""SELECT id, st_gostov FROM parcela
                 ORDER BY id""")
