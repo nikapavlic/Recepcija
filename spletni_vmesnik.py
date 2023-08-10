@@ -474,6 +474,14 @@ def pregled_parcel():
     seznam = [value[0] for value in sz]
     return template_user('parcele.html', zasedene = cur, parcele = cur1, seznam = seznam)
 
+static_dir = "./img"
+
+@route("/img/<filename:path>") 
+def static(filename):
+    return static_file(filename, root=static_dir)
+
+
+
 conn = psycopg2.connect(database=auth.db, host=auth.host, user=auth.user, password=auth.password, port=DB_PORT)
 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor) 
 cur1 = conn.cursor(cursor_factory=psycopg2.extras.DictCursor) 
