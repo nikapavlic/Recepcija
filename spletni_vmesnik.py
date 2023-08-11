@@ -482,52 +482,53 @@ def static(filename):
     return static_file(filename, root=static_dir)
 
 
-# spreminjanje stevila ljudi na rezervaciji
-# @get('/urejanje/<id>')
-# @cookie_required
-# def urejanje_rezervacije_get(id):
-#     #receptor = request.cookies.get("uporabnisko_ime")
-#     id_rez = id
-#     cur.execute("""
-#                 SELECT id, pricetek_bivanja, st_nocitev, odrasli, otroci, rezervirana_parcela, rezervacije.gost AS id_gosta, uporabnik.ime AS ime_gosta, uporabnik.priimek AS priimek_gosta FROM rezervacije
-#                 LEFT JOIN uporabnik ON gost = uporabnik.id
-#                 WHERE id = %s""", (id_rez,))
-#     return template_user('urejanje_rezervacije.html', rezervacija=cur)
+# spreminjanje stevila ljudi na rezervaciji in datume
+@get('/urejanje/<id>')
+@cookie_required
+def urejanje_rezervacije_get(id):
+    #receptor = request.cookies.get("uporabnisko_ime")
+    id_rez = id
+    cur.execute("""
+                SELECT rezervacije.id AS id_rezervacije, pricetek_bivanja, st_nocitev, odrasli, otroci, rezervirana_parcela, rezervacije.gost AS id_gosta, uporabnik.ime AS ime_gosta, uporabnik.priimek AS priimek_gosta FROM rezervacije
+                LEFT JOIN uporabnik ON gost = uporabnik.id
+                WHERE rezervacije.id = %s""", (id_rez,))
+    return template_user('urejanje_rezervacije.html', rezervacija=cur)
 
-#    #return template_user('rezervacije.html', rezervacija=cur, receptor=receptor)
+   #return template_user('rezervacije.html', rezervacija=cur, receptor=receptor)
 
-# @post('/urejanje/')
-# @cookie_required
-# def urejanje_rezervacije_post():
-#     id_rez = request.forms.id_rez
-#     redirect(url('urejanje_rezervacije_get', id=id_rez))
+@post('/urejanje/')
+@cookie_required
+def urejanje_rezervacije_post():
+    id_rez = request.forms.id_rez
+    redirect(url('urejanje_rezervacije_get', id=id_rez))
 
-# @post('/urejanje_rezervacije/')
-# @cookie_required
-# def uredi_rezervacijo():
-#     id_rez = request.forms.id_rezervacije
-#     zacetek_nocitve = request.forms.zacetek_nocitve
-#     stevilo_dni = int(request.forms.stevilo_dni)
-#     stevilo_odraslih = int(request.forms.stevilo_odraslih)
-#     stevilo_otrok = int(request.forms.stevilo_otrok)
-#     id_gosta = request.forms.id_gosta 
-#     id_parcele = request.forms.id_parcele
+@post('/urejanje_rezervacije/')
+@cookie_required
+def uredi_rezervacijo():
+    id_rez = request.forms.id_rezervacije
+    zacetek_nocitve = request.forms.zacetek_nocitve
+    stevilo_dni = int(request.forms.stevilo_dni)
+    stevilo_odraslih = int(request.forms.stevilo_odraslih)
+    stevilo_otrok = int(request.forms.stevilo_otrok)
+ #   id_gosta = request.forms.id_gosta 
+    #id_parcele = request.forms.id_parcele
+    cur.execute("SELECT rezervirana_parcela FROM rezervacije WHERE id = %s", (id_rez,) )
+    id_parcele = cur.fetchone()
+    id_parcele = id_parcele[0]
 
-#     seznam_prostih_parcel = repo.dobi_proste_parcele(datum_nove = zacetek_nocitve, st_dni_nove=stevilo_dni, st_odraslih=stevilo_odraslih, st_otrok=stevilo_otrok)
+    seznam_prostih_parcel = repo.dobi_proste_parcele_brez_moje_rezervacije(id_rezervacije=id_rez, datum_nove = zacetek_nocitve, st_dni_nove=stevilo_dni, st_odraslih=stevilo_odraslih, st_otrok=stevilo_otrok)
+    seznam = [value[0] for value in seznam_prostih_parcel]
 
-#     if seznam_prostih_parcel == []:
-#         redirect(url('rezervacije_get')) #tukaj bi bilo fajn da se izpiše žal ni prostih parcel
-#     elif id_parcele in seznam_prostih_parcel:
-#         prosta_parcela=id_parcele
-#     else:
-#         prosta_parcela = seznam_prostih_parcel[0]
+    if seznam_prostih_parcel == []:
+        redirect(url('rezervacije_get')) #tukaj bi bilo fajn da se izpiše žal ni prostih parcel
+    elif int(id_parcele) in seznam:
+        prosta_parcela=id_parcele
+        repo.posodobi_rezervacijo(id_rez, zacetek_nocitve, stevilo_dni, stevilo_odraslih, stevilo_otrok, prosta_parcela)
+    else:
+        prosta_parcela = seznam[0]
+        repo.posodobi_rezervacijo(id_rez, zacetek_nocitve, stevilo_dni, stevilo_odraslih, stevilo_otrok, prosta_parcela)
 
-#     rezervacija = rezervacije(id = id_rez, pricetek_bivanja=zacetek_nocitve, st_nocitev=stevilo_dni, odrasli=stevilo_odraslih, otroci=stevilo_otrok, rezervirana_parcela=prosta_parcela, gost=id_gosta)
-    
-#     repo.zbrisi_rezervacijo(id_rez)
-#     repo.dodaj_rezervacije(rezervacija)
-
-#     redirect(url('rezervacije_get'))
+    redirect(url('rezervacije_get'))
 
 
 

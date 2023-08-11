@@ -48,8 +48,19 @@ cur.execute("SELECT id FROM uporabnik")
 id_gosta = cur.fetchall()[1][0]
 print(id_gosta)
 
-seznam_prostih_parcel = repo.dobi_proste_parcele('2023-06-08', 3, 2, 1)
+seznam_prostih_parcel = repo.dobi_proste_parcele('2023-08-11', 3, 2, 2)
 print(seznam_prostih_parcel)
+
+parcele = repo.dobi_proste_parcele_brez_moje_rezervacije(50,'2023-08-11', 3, 2, 2 )
+id_parcele = 24
+seznam = [value[0] for value in parcele]
+if seznam == []:
+    print('prazen') #tukaj bi bilo fajn da se izpiše žal ni prostih parcel
+elif int(id_parcele) in seznam:
+    print(id_parcele)
+else:
+    print(seznam[0])
+print(seznam)
 
 
 # datum_zacetka_nove = dt.strptime('2024-04-30', '%Y-%m-%d').date()

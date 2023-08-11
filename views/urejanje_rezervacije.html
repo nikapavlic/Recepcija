@@ -1,6 +1,8 @@
 % rebase('base.html', naslov='Uredi rezervacijo')
 
-<a>Rezervacija številka: {{id}}</a>
+%for id_rezervacije, pricetek_bivanja, st_nocitev, odrasli, otroci, rezervirana_parcela, id_gosta, ime_gosta, priimek_gosta in rezervacija:
+
+<a>Rezervacija številka: {{id_rezervacije}}</a>
 <a>Gost: {{ime_gosta}} {{priimek_gosta}}</a>
 <a>Gost: {{id_gosta}}</a>
 <form action="{{url('uredi_rezervacijo')}}" method="post" class="row-g3 mx-2">
@@ -10,7 +12,7 @@
     </div>
     <div class="col-4">
         <label for="stevilo_dni" class="form-label my-3">število dni:</label>
-        <input id="stevilo_dni" name="stevilo_dni" value = "{{st_nocitev}}"" type="text" class="form-control" />
+        <input id="stevilo_dni" name="stevilo_dni" value = "{{st_nocitev}}" type="text" class="form-control" />
     </div>
     <div class="col-4">
         <label for="stevilo_odraslih" class="form-label my-3">Število odraslih:</label>
@@ -20,10 +22,12 @@
         <label for="stevilo_otrok" class="form-label my-3">število otrok:</label>
         <input id="stevilo_otrok" name="stevilo_otrok" value="{{otroci}}" type="text" class="form-control" />
     </div>
-
-    <div class="col-12 my-3 d-flex justify-content-start">
-        <button class="btn btn-outline-dark" type="submit" name = "id_rezervacije" value = {{id}}>Potrdi</button>
+    <div>
+        <button type="button" name = "id_gosta" value = {{id_gosta}} hidden>Skrito</button>
+        <button type="button" name = "id_parcele" value = {{rezervirana_parcela}} hidden>Skrito</button>
     </div>
-    <button type="button" name = "id_gosta" value = {{id_gosta}} hidden>Skrito</button>
-    <button type="button" name = "id_parcele" value = {{id_parcele}} hidden>Skrito</button>
-    
+    <div class="col-12 my-3 d-flex justify-content-start">
+        <button class="btn btn-outline-dark" type="submit" name = "id_rezervacije" value = {{id_rezervacije}}>Potrdi</button>
+    </div>
+
+%end

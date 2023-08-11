@@ -125,7 +125,24 @@ class Repo:
                 LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id WHERE
                 pricetek_bivanja + st_nocitev  > TO_DATE(%s, 'YYYY-MM-DD') AND
                 pricetek_bivanja < TO_DATE(%s, 'YYYY-MM-DD') + %s)""",(int(st_odraslih)+int(st_otrok), datum_nove, datum_nove, int(st_dni_nove)))
-        prosta_parcela = self.cur.fetchone()
+        prosta_parcela = self.cur.fetchall()
+        return prosta_parcela
+    
+    def dobi_proste_parcele_brez_moje_rezervacije(self, id_rezervacije, datum_nove, st_dni_nove, st_odraslih, st_otrok):
+        # pomozna_tabela = self.cur.execute("""SELECT rezervacije.id FROM rezervacije
+        #         EXCEPT
+        #         SELECT rezervacije.id FROM rezervacije
+        #         WHERE rezervacije.id = %s""", (id_rezervacije))
+        self.cur.execute(
+            """SELECT parcela.id FROM parcela
+            LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id
+            WHERE st_gostov >= %s AND parcela.id NOT IN 
+                (SELECT parcela.id FROM parcela
+                LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id 
+                WHERE NOT rezervacije.id = %s AND
+                pricetek_bivanja + st_nocitev  > TO_DATE(%s, 'YYYY-MM-DD') AND
+                pricetek_bivanja < TO_DATE(%s, 'YYYY-MM-DD') + %s)""",(int(st_odraslih)+int(st_otrok), id_rezervacije, datum_nove, datum_nove, int(st_dni_nove)))
+        prosta_parcela = self.cur.fetchall()
         return prosta_parcela
 
     def zbrisi_rezervacijo(self, id_rezervacije):
@@ -135,6 +152,19 @@ class Repo:
 #         
     def ustvari_racun(self, id_rez, emso):
         self.cur.execute("""INSERT INTO racun (id_rezervacije, izdajatelj) VALUES (%s, %s); """, (id_rez, emso))
+        self.conn.commit()
+        return
+    
+    def posodobi_rezervacijo(self, id_rezervacije, pricetek_bivanja, st_nocitev, odrasli, otroci, nova_parcela):
+        self.cur.execute(
+            """
+            UPDATE rezervacije
+            SET pricetek_bivanja = %s,
+                st_nocitev = %s,
+                odrasli = %s,
+                otroci = %s,
+                rezervirana_parcela = %s
+            WHERE rezervacije.id = %s""", (pricetek_bivanja, int(st_nocitev), int(odrasli), int(otroci), int(nova_parcela), int(id_rezervacije)))
         self.conn.commit()
         return
 
