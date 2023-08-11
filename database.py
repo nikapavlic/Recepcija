@@ -125,7 +125,7 @@ class Repo:
                 LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id WHERE
                 pricetek_bivanja + st_nocitev  > TO_DATE(%s, 'YYYY-MM-DD') AND
                 pricetek_bivanja < TO_DATE(%s, 'YYYY-MM-DD') + %s)""",(int(st_odraslih)+int(st_otrok), datum_nove, datum_nove, int(st_dni_nove)))
-        prosta_parcela = self.cur.fetchall()
+        prosta_parcela = self.cur.fetchone()
         return prosta_parcela
     
     def dobi_proste_parcele_brez_moje_rezervacije(self, id_rezervacije, datum_nove, st_dni_nove, st_odraslih, st_otrok):

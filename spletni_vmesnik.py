@@ -167,7 +167,8 @@ def prijava_receptor_post():
     #geslo = password_hash(request.forms.get('geslo'))
     geslo = request.forms.get('geslo')
     if uporabnisko_ime is None or geslo is None:
-        redirect(url('prijava_receptor_get'))
+        sporocilo = "Vnesi uporabniško ime in geslo"
+        return template("receptor_prijava.html", napaka = sporocilo)
     hashBaza = None
     try: 
         hashBaza = cur.execute("SELECT geslo FROM receptor WHERE uporabnisko_ime = %s", [uporabnisko_ime])
@@ -177,12 +178,15 @@ def prijava_receptor_post():
     except:
         hashBaza = None
     if hashBaza is None:
-        redirect(url('prijava_receptor_get'))
-        return
+#        redirect(url('prijava_receptor_get'))
+        sporocilo = "Napačno uporabniško ime"
+        return template("receptor_prijava.html", napaka = sporocilo)
     if geslo != hashBaza:
       #  nastaviSporocilo('Nekaj je šlo narobe.') 
-        redirect(url('prijava_receptor_get'))
-        return
+#        redirect(url('prijava_receptor_get'))
+        sporocilo = "Napačno geslo"
+        return template("receptor_prijava.html", napaka = sporocilo)
+
     response.set_cookie("uporabnisko_ime", uporabnisko_ime,  path = "/") #secret = "secret_value",, httponly = True)
     response.set_cookie("rola", "receptor",  path = "/")
     response.set_cookie("id", str(id_receptorja),  path = "/")
@@ -204,7 +208,8 @@ def prijava_gost_post():
     uporabnisko_ime = request.forms.get('uporabnisko_ime')
     geslo = password_hash(request.forms.get('geslo'))
     if uporabnisko_ime is None or geslo is None:
-        redirect(url('prijava_gost_get'))
+        sporocilo = "Vnesi uporabniško ime in geslo"
+        return template("gost_prijava.html", napaka = sporocilo)
     hashBaza = None
     try: 
         cur.execute("SELECT geslo FROM uporabnik WHERE uporabnisko_ime = %s", [uporabnisko_ime])
@@ -214,12 +219,13 @@ def prijava_gost_post():
     except:
         hashBaza = None
     if hashBaza is None:
-        redirect(url('prijava_gost_get'))
-        return
+        sporocilo = "Napačno uporabniško ime"
+        return template("gost_prijava.html", napaka = sporocilo)
     if geslo != hashBaza:
          #nastaviSporocilo('Nekaj je šlo narobe.') 
-         redirect(url('prijava_gost_get'))
-         return
+#         redirect(url('prijava_gost_get'))
+        sporocilo = "Napačno geslo"
+        return template("gost_prijava.html", napaka = sporocilo)
     response.set_cookie("uporabnisko_ime", uporabnisko_ime,  path = "/") #secret = "secret_value",, httponly = True)
     response.set_cookie("rola", "gost",  path = "/")
     response.set_cookie("id", str(id_gosta),  path = "/")
@@ -482,7 +488,7 @@ def static(filename):
     return static_file(filename, root=static_dir)
 
 
-# spreminjanje stevila ljudi na rezervaciji in datume
+# UREJANJE REZERVACIJ
 @get('/urejanje/<id>')
 @cookie_required
 def urejanje_rezervacije_get(id):
@@ -512,6 +518,10 @@ def uredi_rezervacijo():
     stevilo_otrok = int(request.forms.stevilo_otrok)
  #   id_gosta = request.forms.id_gosta 
     #id_parcele = request.forms.id_parcele
+    # cur1.execute("SELECT gost FROM rezervacije WHERE id = %s", (id_rez,) )
+    # id_gosta = cur.fetchone()
+    # id_gosta = id_gosta[0]
+
     cur.execute("SELECT rezervirana_parcela FROM rezervacije WHERE id = %s", (id_rez,) )
     id_parcele = cur.fetchone()
     id_parcele = id_parcele[0]
@@ -520,7 +530,14 @@ def uredi_rezervacijo():
     seznam = [value[0] for value in seznam_prostih_parcel]
 
     if seznam_prostih_parcel == []:
-        redirect(url('rezervacije_get')) #tukaj bi bilo fajn da se izpiše žal ni prostih parcel
+#        redirect(url('rezervacije_get'))
+        sporocilo = "Za izbrane parametre ni prostih parcel" 
+        cur.execute("""
+                SELECT rezervacije.id AS id_rezervacije, pricetek_bivanja, st_nocitev, odrasli, otroci, rezervirana_parcela, rezervacije.gost AS id_gosta, uporabnik.ime AS ime_gosta, uporabnik.priimek AS priimek_gosta FROM rezervacije
+                LEFT JOIN uporabnik ON gost = uporabnik.id
+                WHERE rezervacije.id = %s""", (id_rez,))
+        return template_user('urejanje_rezervacije.html', rezervacija=cur, napaka = sporocilo)
+        
     elif int(id_parcele) in seznam:
         prosta_parcela=id_parcele
         repo.posodobi_rezervacijo(id_rez, zacetek_nocitve, stevilo_dni, stevilo_odraslih, stevilo_otrok, prosta_parcela)
