@@ -531,6 +531,34 @@ def static(filename):
 
 
 
+# ### FILTRI? ideja
+
+# @post('/rezervacije/uporabnik')
+# @cookie_required
+# def urejanje_rezervacije_post():
+#     uporabnik = request.forms.uporabnik
+#     cur.execute("SELECT id FROM uporabnik WHERE uporabnisko_ime = %s", (uporabnik,))
+#     id_uporabnik = cur.fetchone()
+#     redirect(url('rezervacije_uporabnik_get', id=id_uporabnik))
+
+
+# @get('/rezervacije/uporabnik/<id>')
+# @cookie_required 
+# def rezervacije_uporabnik_get(id):
+
+#     cur.execute("""
+#         SELECT rezervacije.id,  pricetek_bivanja, st_nocitev,odrasli,otroci, rezervirana_parcela, gost, ime, priimek FROM rezervacije
+#         LEFT JOIN uporabnik ON uporabnik.id = rezervacije.gost
+#         WHERE uporabnik.id = %s
+#         ORDER BY pricetek_bivanja
+#     """, (id,))
+#     cur1.execute("""SELECT id_rezervacije FROM racun""") #tu nevem če ga mot da so vsi racuni?
+#     sz = cur1.fetchall()
+#     seznam = [value[0] for value in sz]
+
+#     return template_user('rezervacije.html', rezervacija = cur, poravnani = seznam)
+
+
 conn = psycopg2.connect(database=auth.db, host=auth.host, user=auth.user, password=auth.password, port=DB_PORT)
 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor) 
 cur1 = conn.cursor(cursor_factory=psycopg2.extras.DictCursor) 
