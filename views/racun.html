@@ -266,7 +266,7 @@ a {
 }
 </style>
 
-%for id, pricetek_bivanja, st_nocitev, odrasli, otroci in rezervacija:
+%for id_rezervacije, pricetek_bivanja, st_nocitev, odrasli, otroci, ime_gosta, priimek_gosta in rezervacija:
 
 <table class="body-wrap">
     <tbody><tr>
@@ -287,7 +287,11 @@ a {
                                         <table class="invoice">
                                             <tbody>
                                             <tr>
-                                                <td><b>Rezervacija št.:{{id}}</b><br><b>Gostje: </b>vstavi gosta<br><b>Datum izdaje računa: </b></td>
+                                                <td><b>Rezervacija št.: </b>{{id_rezervacije}}<br><b>Gost: </b>{{ime_gosta}} {{priimek_gosta}}<br><b>Datum izdaje računa: </b>
+                                                    <script>
+                                                        date = new Date().toLocaleDateString();
+                                                        document.write(date);
+                                                        </script></td>
                                             </tr>
                                             <!-- <div id="current_date"></p>
                                                 <script>
@@ -356,7 +360,7 @@ a {
                         <tbody><tr>
                         <form method = "POST" action="/rezervacija/izdaj_racun/">
                             <div class="col-12 my-3 d-flex justify-content-start">
-                                <button class="btn btn-outline-dark" type="submit" name = "id_rez" value = {{id}}>Izstavi račun</button>
+                                <button class="btn btn-outline-dark" type="submit" name = "id_rez" value = {{id_rezervacije}}>Izstavi račun</button>
                             </div>
                         </tr>
                     </tbody></table>

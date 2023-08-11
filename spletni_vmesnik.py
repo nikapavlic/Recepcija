@@ -394,7 +394,9 @@ def ustvari_predracun_get(id):
     ime = podatki[0]
     priimek= podatki[1]
     id_rez = id
-    cur.execute("SELECT id, pricetek_bivanja, st_nocitev, odrasli, otroci FROM rezervacije WHERE id = %s", (id_rez,))
+    cur.execute("""SELECT rezervacije.id AS id_rezervacije, pricetek_bivanja, st_nocitev, odrasli, otroci, ime AS ime_gosta, priimek AS priimek_gosta FROM rezervacije 
+                INNER JOIN uporabnik ON uporabnik.id = rezervacije.gost
+                WHERE rezervacije.id = %s""", (id_rez,))
 
     return template('predracun.html', rezervacija=cur, receptor=receptor, ime=ime, priimek=priimek)
 
@@ -407,10 +409,10 @@ def ustvari_racun_get(id):
     podatki=cur.fetchone()
     ime = podatki[0]
     priimek= podatki[1]
-#    id_rez = request.forms.id_rez KAKO DOBIT ID REZERVACIJE NAJBOLJ ELEGANTNO
     id_rez = id
-    cur.execute("SELECT id, pricetek_bivanja, st_nocitev, odrasli, otroci FROM rezervacije WHERE id = %s", (id_rez,))
-
+    cur.execute("""SELECT rezervacije.id AS id_rezervacije, pricetek_bivanja, st_nocitev, odrasli, otroci, ime AS ime_gosta, priimek AS priimek_gosta FROM rezervacije 
+                INNER JOIN uporabnik ON uporabnik.id = rezervacije.gost
+                WHERE rezervacije.id = %s""", (id_rez,))
     return template('racun.html', rezervacija=cur, receptor=receptor, ime=ime, priimek=priimek)
 
 @post('/rezervacija/racun/')
