@@ -71,9 +71,26 @@ def cookie_required(f):
         if cookie:
             return f(*args, **kwargs)
 
-        return template("receptor_prijava.html", napaka="dekorator!")
+        return template('zacetna_stran.html', napaka="Potrebna je prijava")
 
     return decorated
+
+
+def cookie_required_receptor(f):
+    """
+    Dekorator, ki zahteva veljaven piškotek receptorja. Če piškotka ni, uporabnika preusmeri na stran za prijavo.
+    """
+    @wraps(f)
+    def decorated(*args, **kwargs):
+
+        cookie = request.get_cookie("rola")
+        if cookie == "receptor":
+            return f(*args, **kwargs)
+
+        return template("receptor_prijava.html", napaka="Za dostop se je potrebno prijaviti kot receptor")
+
+    return decorated
+
 
 
 @get('/')
@@ -323,12 +340,14 @@ def gost_rezervacija_post():
 
 @get('/dodaj_receptorja')
 @cookie_required
+@cookie_required_receptor
 def dodaj_receptorja_get():
     return template_user('nov_receptor.html')
 
 
 @post('/dodaj_receptorja')
 @cookie_required
+@cookie_required_receptor
 def dodaj_receptorja_post():
     emso = request.forms.emso
     uporabnisko_ime = request.forms.uporabnisko_ime
@@ -368,6 +387,7 @@ def registracija_post():
 
 @get('/rezervacije')
 @cookie_required
+@cookie_required_receptor
 def rezervacije_get():
     #receptor = request.get_cookie("uporabnisko_ime")
     # if receptor == None:
@@ -401,6 +421,7 @@ def zbrisi_rezervacijo():
 
 @get('/aktivne-rezervacije')
 @cookie_required
+@cookie_required_receptor
 def aktivne_rezervacije_get():
     #receptor = request.get_cookie("uporabnisko_ime")
     # if receptor == None:
@@ -422,6 +443,7 @@ def aktivne_rezervacije_get():
 
 @post('/rezervacija/predracun/')
 @cookie_required
+@cookie_required_receptor
 def ustvari_predracun_post():
     id_rez = request.forms.id_rez
     redirect(url('ustvari_predracun_get', id=id_rez))
@@ -429,6 +451,7 @@ def ustvari_predracun_post():
 
 @get('/rezervacija/predracun/<id>')
 @cookie_required
+@cookie_required_receptor
 def ustvari_predracun_get(id):
     receptor = request.cookies.get("uporabnisko_ime")
     cur.execute(
@@ -446,6 +469,7 @@ def ustvari_predracun_get(id):
 
 @get('/rezervacija/racun/<id>')
 @cookie_required
+@cookie_required_receptor
 def ustvari_racun_get(id):
     receptor = request.cookies.get("uporabnisko_ime")
     cur.execute(
@@ -462,6 +486,7 @@ def ustvari_racun_get(id):
 
 @post('/rezervacija/racun/')
 @cookie_required
+@cookie_required_receptor
 def ustvari_racun_post():
     id_rez = request.forms.id_rez
 #    emso = request.cookies.get("id")
@@ -473,6 +498,7 @@ def ustvari_racun_post():
 
 @get('/rezervacija/izdaj_racun/<id>')
 @cookie_required
+@cookie_required_receptor
 def izdaj_racun_get(id):
     receptor = request.cookies.get("uporabnisko_ime")
 #    id_rez = request.forms.id_rez KAKO DOBIT ID REZERVACIJE NAJBOLJ ELEGANTNO
@@ -486,6 +512,7 @@ def izdaj_racun_get(id):
 
 @post('/rezervacija/izdaj_racun/')
 @cookie_required
+@cookie_required_receptor
 def izdaj_racun_post():
     id_rez = request.forms.id_rez
     emso = request.cookies.get("id")
@@ -498,6 +525,7 @@ def izdaj_racun_post():
 
 @get('/racuni')
 @cookie_required
+@cookie_required_receptor
 def pregled_racunov_get():
     cur.execute("""
         SELECT racun.id AS id_racuna, racun.id_rezervacije AS id_rezervacije, receptor.ime AS ime_receptorja, receptor.priimek AS priimek_receptorja, uporabnik.ime AS ime_uporabnika , uporabnik.priimek AS priimek_uporabnika, rezervacije.odrasli AS odrasli, rezervacije.otroci AS otroci, rezervacije.st_nocitev AS st_nocitev FROM racun 
@@ -513,6 +541,7 @@ def pregled_racunov_get():
 
 @get('/uporabniki')
 @cookie_required
+@cookie_required_receptor
 def pregled_uporabnikov_get():
     cur.execute("""
         SELECT id, uporabnisko_ime, ime, priimek, rojstvo, nacionalnost FROM uporabnik
@@ -524,6 +553,7 @@ def pregled_uporabnikov_get():
 
 @get('/parcele')
 @cookie_required
+@cookie_required_receptor
 def pregled_parcel():
     cur.execute("""
                 SELECT parcela.id, uporabnik.ime, uporabnik.priimek, rezervacije.id FROM parcela
@@ -550,6 +580,7 @@ def static(filename):
 # UREJANJE REZERVACIJ
 @get('/urejanje/<id>')
 @cookie_required
+@cookie_required_receptor
 def urejanje_rezervacije_get(id):
     #receptor = request.cookies.get("uporabnisko_ime")
     id_rez = id
@@ -564,6 +595,7 @@ def urejanje_rezervacije_get(id):
 
 @post('/urejanje/')
 @cookie_required
+@cookie_required_receptor
 def urejanje_rezervacije_post():
     id_rez = request.forms.id_rez
     redirect(url('urejanje_rezervacije_get', id=id_rez))
@@ -571,6 +603,7 @@ def urejanje_rezervacije_post():
 
 @post('/urejanje_rezervacije/')
 @cookie_required
+@cookie_required_receptor
 def uredi_rezervacijo():
     id_rez = request.forms.id_rezervacije
     zacetek_nocitve = request.forms.zacetek_nocitve
