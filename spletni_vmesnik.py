@@ -323,6 +323,13 @@ def gost_rezervacija_post():
     #zacetek_nocitve = str(zacetek_nocitve)
     #zacetek_nocitve = '2023-09-01'
     #zacetek_nocitve = zacetek_nocitve.strftime("%Y-%m-%d")
+
+    # ni možna rezervacija za nazaj:
+    datum= datetime.strptime(zacetek_nocitve, "%Y-%m-%d")
+    danes = datetime.now()
+    if datum.date() < danes.date():
+         return template_user("nova_rezervacija.html",  napaka="Ni mogoče potovati v preteklost <3")
+    
     seznam_prostih_parcel = repo.dobi_proste_parcele(
         datum_nove=zacetek_nocitve, st_dni_nove=stevilo_dni, st_odraslih=stevilo_odraslih, st_otrok=stevilo_otrok)
     prosta_parcela = seznam_prostih_parcel[0]

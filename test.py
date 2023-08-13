@@ -2,6 +2,7 @@ from data.model import *
 from database import Repo
 from datetime import datetime as dt
 from datetime import date
+from datetime import datetime
 
 import os
 
@@ -66,3 +67,18 @@ print(seznam)
 # datum_zacetka_nove = dt.strptime('2024-04-30', '%Y-%m-%d').date()
 # seznam_prostih_parcel1 = repo.dobi_proste_parcele(datum_zacetka_nove, 3, 2, 1)
 # print(seznam_prostih_parcel1)
+
+today = date.today()
+print(today)
+
+print(today.strftime("%d/%m/%Y"))
+
+datum= datetime.strptime("2023-08-13", "%Y-%m-%d")
+danes = datetime.now()
+
+if datum.date() < danes.date():
+    a=1
+else:
+    a = 0
+
+print(a)
