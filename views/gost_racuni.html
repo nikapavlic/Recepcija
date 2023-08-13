@@ -1,0 +1,51 @@
+% rebase('base.html', naslov='Tukaj si lahko ogledaš račune')
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item ">
+                <a class="nav-link" href="/gost/pregled/">Pregled rezervacij<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="/gost/racuni/">Računi</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav mr-auto d-flex justify-content-end">
+            <li class="nav-item dropdown d-flex justify-content-end active">
+                <a class="nav-link dropdown-toggle float-right" href="#" id="navbarDropdown" role="button"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{uporabnik}}
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                    <form class="form-inline my-2 my-lg-0" action="{{url('odjava')}}" method="get">
+                        <button class="dropdown-item float-right" type="submit">Odjava</button>
+                    </form>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+<table class="table table-striped">
+    <tr>
+        <th>ID računa</th>
+        <th>ID rezervacije</th>
+        <th>Ime</th>
+        <th>Število nočitev</th>
+        <th>Število odraslih</th>
+        <th>Število otrok</th>
+        <th>Cena</th>
+    </tr>
+    %for racun, rezervacija, ime, priimek, odrasli, otroci, st_nocitev in racuni:
+    <tr>
+        <td>{{racun}}</td>
+        <td>{{rezervacija}}</td>
+        <td>{{ime}}</td>
+        <td>{{st_nocitev}}</td>
+        <td>{{odrasli}}</td>
+        <td>{{otroci}}</td>
+        <td>{{(odrasli*12 + otroci*7)*st_nocitev}} &euro;</td>
+        %end
+    </tr>
+</table>

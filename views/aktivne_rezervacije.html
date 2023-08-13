@@ -1,20 +1,6 @@
 % rebase('base.html', naslov='Aktivne rezervacije')
-<!-- <div class="container d-flex justify-content-end">
-  <div class="row">
-    <div class="col-1">
-<p class="float-right">{{uporabnik}}</p>
-<p class="alignright">{{rola}}</p>
-<span class="badge text-bg-primary float-right">{{uporabnik}}</span>
-<span class="badge text-bg-primary float-right">{{rola}}</span>
-</div></div></div> -->
-
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <!-- <a class="navbar-brand" href="#">Navbar</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button> -->
-
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
@@ -27,11 +13,12 @@
         <a class="nav-link" href="/racuni">Arhiv računov</a>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
           Drugo
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-        <a class="dropdown-item" href="/uporabniki">Pregled uporabnikov</a>
+          <a class="dropdown-item" href="/uporabniki">Pregled uporabnikov</a>
           <a class="dropdown-item" href="/parcele">Pregled parcel</a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="#">Something else here</a>
@@ -46,77 +33,77 @@
         <a class="nav-link disabled" href="/receptorji">Receptorji</a>
       </li>
       %end
-    <!-- </ul> -->
-    <!-- <form class="form-inline my-2 my-lg-0" action="{{url('odjava')}}" method ="get">
-      <button class="btn btn-light btn-outline-dark float-right" type="submit">Odjava</button>
-    </form> -->
-  </ul>
+    </ul>
     <ul class="navbar-nav mr-auto d-flex justify-content-end">
-    <li class="nav-item dropdown d-flex justify-content-end active">
-      <a class="nav-link dropdown-toggle float-right" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        {{uporabnik}}
-      </a>
-      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-        <form class="form-inline my-2 my-lg-0" action="{{url('odjava')}}" method ="get">
-          <button class="dropdown-item float-right" type="submit">Odjava</button>
-        </form>
-      </div>
-    </li>
+      <li class="nav-item dropdown d-flex justify-content-end active">
+        <a class="nav-link dropdown-toggle float-right" href="#" id="navbarDropdown" role="button"
+          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{uporabnik}}
+        </a>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+          <form class="form-inline my-2 my-lg-0" action="{{url('odjava')}}" method="get">
+            <button class="dropdown-item float-right" type="submit">Odjava</button>
+          </form>
+        </div>
+      </li>
     </ul>
   </div>
 </nav>
 
-    <table class="table table-striped">
-      <tr>
-        <th>ID rezervacije</th>
-        <th>Pričetek bivanja</th>
-        <th>Število nočitev</th>
-        <th>Število odraslih</th>
-        <th>Število otrok</th>
-        <th>Rezervirana parcela</th>
-        <th>ID gosta</th>
-        <th>Ime</th>
-        <th>Priimek</th>
-        <th></th>
+<table class="table table-striped">
+  <tr>
+    <th>ID rezervacije</th>
+    <th>Pričetek bivanja</th>
+    <th>Število nočitev</th>
+    <th>Število odraslih</th>
+    <th>Število otrok</th>
+    <th>Rezervirana parcela</th>
+    <th>ID gosta</th>
+    <th>Ime</th>
+    <th>Priimek</th>
+    <th></th>
 
-      </tr>
-      %for id, pricetek_bivanja, st_nocitev, odrasli, otroci, rezervirana_parcela, gost, ime, priimek in rezervacija:
-      <tr>
-        <td>{{id}}</td>
-        <td>{{pricetek_bivanja}}</td>
-        <td>{{st_nocitev}}</td>
-        <td>{{odrasli}}</td>
-        <td>{{otroci}}</td>
-        <td>{{rezervirana_parcela}}</td>
-        <td>{{gost}}</td>        
-        <td>{{ime}}</td>
-        <td>{{priimek}}</td>
-        %if id in poravnani:
-          <td class="dropdown">
-          <button class="btn btn-secondary btn-outline-dark disabled dropdown-toggle" type="button" >
-            Poravnan
-          </button></td>
-        %else:
-          <td class="dropdown">
-          <button class="btn btn-secondary btn-outline-dark dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Možnosti
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" href="#">Uredi</a>
-              <form method = "POST" action="/rezervacija/predracun/">
-                <button class="dropdown-item" type="submit" name = "id_rez" value = {{id}}>Predračun</button>
-              </form>
-              <!-- <a class="dropdown-item" href="#">Predračun</a> -->
-              <form method = "POST" action="/rezervacija/racun/">
-                <button class="dropdown-item" type="submit" name = "id_rez" value = {{id}}>Izstavi račun</button>
-              </form>
-              <form method = "POST" action="/zbrisi-rezervacijo">
-                <button class="dropdown-item" type="submit" name = "id_rezervacije" value = {{id}}>Zbriši</button>
-              </form>
-              
-            </div>
-          </td>
-        %end
-      </tr>
-      %end
-    </table>
+  </tr>
+  %for id, pricetek_bivanja, st_nocitev, odrasli, otroci, rezervirana_parcela, gost, ime, priimek in rezervacija:
+  <tr>
+    <td>{{id}}</td>
+    <td>{{pricetek_bivanja}}</td>
+    <td>{{st_nocitev}}</td>
+    <td>{{odrasli}}</td>
+    <td>{{otroci}}</td>
+    <td>{{rezervirana_parcela}}</td>
+    <td>{{gost}}</td>
+    <td>{{ime}}</td>
+    <td>{{priimek}}</td>
+    %if id in poravnani:
+    <td class="dropdown">
+      <button class="btn btn-secondary btn-outline-dark disabled dropdown-toggle" type="button">
+        Poravnan
+      </button>
+    </td>
+    %else:
+    <td class="dropdown">
+      <button class="btn btn-secondary btn-outline-dark dropdown-toggle" type="button" id="dropdownMenuButton"
+        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Možnosti
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <form method="POST" action="/urejanje/">
+          <button class="dropdown-item" type="submit" name="id_rez" value={{id}}>Uredi</button>
+        </form>
+        <form method="POST" action="/rezervacija/predracun/">
+          <button class="dropdown-item" type="submit" name="id_rez" value={{id}}>Predračun</button>
+        </form>
+        <form method="POST" action="/rezervacija/racun/">
+          <button class="dropdown-item" type="submit" name="id_rez" value={{id}}>Izstavi račun</button>
+        </form>
+        <form method="POST" action="/zbrisi-rezervacijo">
+          <button class="dropdown-item" type="submit" name="id_rezervacije" value={{id}}>Zbriši</button>
+        </form>
+
+      </div>
+    </td>
+    %end
+  </tr>
+  %end
+</table>
