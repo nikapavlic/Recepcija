@@ -591,6 +591,15 @@ def pregled_uporabnikov_get():
                 """)
     return template_user('uporabniki.html', uporabniki=cur)
 
+
+@post('/uporabniki')
+@cookie_required
+@cookie_required_receptor
+def pregled_uporabnikov_post():
+    id_gosta = request.forms.id
+    redirect(url('receptor_rezervira_get',id_gosta))
+
+
 # PREGLED PARCEL
 
 
