@@ -343,6 +343,39 @@ def gost_rezervacija_post():
     redirect(url('pregled_rezervacij_gosta'))
 
    # v gost=manjka id gosta, ki dela rezervacijo, to bi lahko dodale v samo metodo zgoraj, ker je rezervacija itak vezana na uporabnika, zaenkrat meče samo Petja kar na vse rezervacije ne glede na id
+@get('/receptor_rezervira')
+@cookie_required
+def receptor_rezervira_get():
+    
+    #cur.execute("""SELECT id FROM uporabnik WHERE id = %s""", (id, ))
+    # id_gosta = cur.fetchone()
+    return template_user("receptor_rezervira.html")
+
+
+@post('/receptor_rezervira')
+@cookie_required  # POMOJE DA VSE KAR JE V TEJ FUNKCIJI ZAKOMENTIRAN SE LAHKO IZBRIŠE
+def receptor_rezervira_post():
+    zacetek_nocitve = request.forms.zacetek_nocitve
+    stevilo_dni = int(request.forms.stevilo_dni)
+    stevilo_odraslih = int(request.forms.stevilo_odraslih)
+    stevilo_otrok = int(request.forms.stevilo_otrok)
+
+    id_gosta = int(request.forms.id_gosta)
+    # ni možna rezervacija za nazaj:
+    datum= datetime.strptime(zacetek_nocitve, "%Y-%m-%d")
+    danes = datetime.now()
+    if datum.date() < danes.date():
+         return template_user("nova_rezervacija.html",  napaka="Ni mogoče potovati v preteklost <3")
+    
+    seznam_prostih_parcel = repo.dobi_proste_parcele(
+        datum_nove=zacetek_nocitve, st_dni_nove=stevilo_dni, st_odraslih=stevilo_odraslih, st_otrok=stevilo_otrok)
+    prosta_parcela = seznam_prostih_parcel[0]
+
+    rezervacija = rezervacije(pricetek_bivanja=zacetek_nocitve, st_nocitev=stevilo_dni,
+                              odrasli=stevilo_odraslih, otroci=stevilo_otrok, rezervirana_parcela=prosta_parcela, gost=id_gosta)
+
+    repo.dodaj_rezervacije(rezervacija)
+    redirect(url('pregled_uporabnikov_get'))
 
 
 @get('/dodaj_receptorja')
@@ -389,7 +422,10 @@ def registracija_post():
     uporabnik1 = uporabnik(uporabnisko_ime=uporabnisko_ime, geslo=geslo,
                            ime=ime, priimek=priimek, rojstvo=rojstvo, nacionalnost=nacionalnost)
     repo.dodaj_uporabnik(uporabnik1)
-    redirect(url('prijava_gost_get'))
+    if request.cookies.get('rola') == 'receptor':
+        redirect(url('gost_rezervacija_get'))
+    else:
+        redirect(url('prijava_gost_get'))
 
 
 @get('/rezervacije')
@@ -561,19 +597,26 @@ def pregled_uporabnikov_get():
 @get('/parcele')
 @cookie_required
 @cookie_required_receptor
-def pregled_parcel():
+def pregled_parcel(dan):
+    dan = request.forms.get('dan', date.today())
     cur.execute("""
                 SELECT parcela.id, uporabnik.ime, uporabnik.priimek, rezervacije.id FROM parcela
                 LEFT JOIN rezervacije ON parcela.id = rezervacije.rezervirana_parcela
                 LEFT JOIN uporabnik ON gost = uporabnik.id
-                WHERE pricetek_bivanja <= NOW() AND NOW() <= pricetek_bivanja + st_nocitev;
-                """)
+                WHERE pricetek_bivanja <= %s AND %s <= pricetek_bivanja + st_nocitev;
+                """,[dan,dan,])
     zasedene = cur
     cur1.execute("""SELECT id, st_gostov FROM parcela
                 ORDER BY id""")
     sz = cur.fetchall()
     seznam = [value[0] for value in sz]
     return template_user('parcele.html', zasedene=zasedene, parcele=cur1, seznam=seznam)
+
+@post('/datum')
+def datum():
+    dan = str(request.forms.dan)
+    redirect(url('pregled_parcel', dan=dan))
+
 
 
 static_dir = "./img"

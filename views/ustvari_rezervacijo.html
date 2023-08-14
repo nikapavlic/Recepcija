@@ -20,3 +20,11 @@
     <div class="col-12 my-3 d-flex justify-content-start">
         <button class="btn btn-outline-dark" type="submit">Najprej na izbiro parcele</button>
     </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#pricetek_bivanja').datepicker({
+                startDate: new Date() // Set the minimum selectable date to today
+            });
+        });
+    </script>

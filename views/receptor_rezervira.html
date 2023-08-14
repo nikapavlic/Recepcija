@@ -1,0 +1,25 @@
+% rebase('base.html', naslov='Ustvari novo rezervacijo')
+
+<form action="{{url('receptor_rezervira_post')}}" method="post" class="row-g3 mx-2">
+    <div class="col-4">
+        <label for="zacetek_nocitve" class="form-label my-3">Začetek nočitve:</label>
+        <input id="zacetek_nocitve" name="zacetek_nocitve" type="date" class="form-control" required />
+    </div>
+    <div class="col-4">
+        <label for="stevilo_dni" class="form-label my-3">število dni:</label>
+        <input id="stevilo_dni" name="stevilo_dni" type="text" class="form-control" required/>
+    </div>
+    <div class="col-4">
+        <label for="stevilo_odraslih" class="form-label my-3">Število odraslih:</label>
+        <input id="stevilo_odraslih" name="stevilo_odraslih" type="text" class="form-control" required />
+    </div>
+    <div class="col-4">
+        <label for="stevilo_otrok" class="form-label my-3">število otrok:</label>
+        <input id="stevilo_otrok" name="stevilo_otrok" type="text" class="form-control" required />
+    </div>
+    <div>
+    <button type="button" name = "id_gosta" value = {{id_gosta}} hidden>Skrito</button>
+</div>
+    <div class="col-12 my-3 d-flex justify-content-start">
+        <button class="btn btn-outline-dark" type="submit">Potrdi</button>
+    </div>

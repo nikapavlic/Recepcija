@@ -53,6 +53,12 @@
   </div>
 </nav>
 
+<form method="POST" action="/datum">
+  <label for="dan" class="form-label my-3">Zasedenost na:</label>
+  <input id="dan" name="dan" type="date" class="form-control" />
+  <button class="btn btn-outline-dark" type="submit">Potrdi</button>
+</form>
+
 %for id, st_gostov in parcele:
 %if id in seznam:
 <button class="btn" style="background-color: #EC7063  ; width: 100px; height: 100px; margin-top: 5px;">{{id}}</button>

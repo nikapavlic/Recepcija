@@ -66,6 +66,7 @@
         <th>Priimek</th>
         <th>Rojstvo</th>
         <th>Nacionalnost</th>
+        <th></th>
     <tbody id="myTable">
       </tr>
       %for id, uporabnisko_ime, ime, priimek, rojstvo, nacionalnost in uporabniki:
@@ -76,6 +77,11 @@
         <td>{{priimek}}</td>
         <td>{{rojstvo}}</td>
         <td>{{nacionalnost}}</td>
+        <td>
+          <form method="POST" action="/receptor_rezervira">
+            <button class="btn btn-light btn-outline-dark" type="submit" name="id" value={{id}}>Dodaj rezervacijo</button>
+          </form>
+        </td>
       </tr>
       %end
     </tbody>
