@@ -24,13 +24,13 @@
 
     <div class="col-4">
         <label for="nacionalnost" class="form-label my-3">Nacionalnost:</label>
-        <select id="nacionalnost" name="nacionalnost" type="text" class="form-control col-12" aria-label="Default select example">
+        <select id="nacionalnost" name="nacionalnost" type="text" class="form-control col-12"
+            aria-label="Default select example">
             <option selected>Nacionalnost</option>
-                <option value="SVN">SVN</option>
-                %for kratica, ime in drzava:
-                <option value={{kratica}}>{{ime}}({{kratica}})</option>
-                %end
-        </select> 
+            %for kratica, ime in drzava:
+            <option value={{kratica}}>{{ime}}({{kratica}})</option>
+            %end
+        </select>
     </div>
 
     <div class="col-12 my-3 d-flex justify-content-start">

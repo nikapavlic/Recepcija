@@ -20,7 +20,7 @@
           <a class="dropdown-item" href="/uporabniki">Pregled uporabnikov</a>
           <a class="dropdown-item" href="/parcele">Pregled parcel</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
+          <a class="dropdown-item" href="/registracija">Registracija gosta</a>
         </div>
       </li>
       %if str(uporabnik) == 'receptor':
@@ -32,10 +32,6 @@
         <a class="nav-link disabled" href="/receptorji">Receptorji</a>
       </li>
       %end
-      <!-- </ul> -->
-      <!-- <form class="form-inline my-2 my-lg-0" action="{{url('odjava')}}" method ="get">
-        <button class="btn btn-light btn-outline-dark float-right" type="submit">Odjava</button>
-      </form> -->
     </ul>
     <ul class="navbar-nav mr-auto d-flex justify-content-end">
       <li class="nav-item dropdown d-flex justify-content-end active">
