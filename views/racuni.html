@@ -61,6 +61,7 @@
       <th>Izdal</th>
       <th>Gost</th>
       <th>Znesek</th>
+      <td></td>
 
     </tr>
     <tbody id="myTable">
@@ -71,6 +72,11 @@
       <td>{{ime_receptorja}} {{priimek_receptorja}}</td>
       <td>{{ime_uporabnika}} {{priimek_uporabnika}}</td>
       <td>{{(odrasli*12 + otroci*7)*st_nocitev}} &euro;</td>
+      <td>
+        <form method="POST" action="/rezervacija/pregled_racuna/">
+          <button class="btn btn-light btn-outline-dark" type="submit" name="id_racuna" value={{id_racuna}}>Preglej račun</button>
+        </form>
+      </td>
     </tr>
     %end
   </tbody>
