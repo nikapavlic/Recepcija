@@ -52,34 +52,56 @@
 
 <table class="table table-striped">
   <tr>
-    <th>ID rezervacije</th>
+    <th>ID rez.</th>
     <th>Pričetek bivanja</th>
+    <th>Odhod</th>
     <th>Število nočitev</th>
     <th>Število odraslih</th>
     <th>Število otrok</th>
-    <th>Rezervirana parcela</th>
+    <th>Rez. parcela</th>
     <th>ID gosta</th>
-    <th>Ime</th>
-    <th>Priimek</th>
+    <th>Ime Priimek</th>
     <th></th>
-
+    <tbody id="myTable">
   </tr>
-  %for id, pricetek_bivanja, st_nocitev, odrasli, otroci, rezervirana_parcela, gost, ime, priimek in rezervacija:
+  %for id, pricetek_bivanja, st_nocitev, odrasli, otroci, rezervirana_parcela, gost, ime, priimek, odhod, pretecena in rezervacija:
   <tr>
     <td>{{id}}</td>
     <td>{{pricetek_bivanja}}</td>
+    <td>{{odhod}}</td>
     <td>{{st_nocitev}}</td>
     <td>{{odrasli}}</td>
     <td>{{otroci}}</td>
     <td>{{rezervirana_parcela}}</td>
     <td>{{gost}}</td>
-    <td>{{ime}}</td>
-    <td>{{priimek}}</td>
+    <td>{{ime}} {{priimek}}</td>
     %if id in poravnani:
     <td class="dropdown">
       <button class="btn btn-secondary btn-outline-dark disabled dropdown-toggle" type="button">
         Poravnan
       </button>
+    </td>
+    %elif pretecena == True:
+    <td class="dropdown">
+      <button class="btn btn-secondary btn-outline-dark dropdown-toggle" type="button" id="dropdownMenuButton"
+        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #E74C3C;">
+        Možnosti
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <form method="POST" action="/urejanje/">
+          <button class="dropdown-item" type="submit" name="id_rez" value={{id}}>Uredi</button>
+        </form>
+        <form method="POST" action="/rezervacija/predracun/">
+          <button class="dropdown-item" type="submit" name="id_rez" value={{id}}>Predračun</button>
+        </form>
+        <form method="POST" action="/rezervacija/racun/">
+          <button class="dropdown-item" type="submit" name="id_rez" value={{id}}>Izstavi račun</button>
+        </form>
+        <form method="POST" action="/zbrisi-rezervacijo">
+          <button class="dropdown-item" type="submit" name="id_rezervacije" value={{id}}>Zbriši</button>
+        </form>
+
+      </div>
     </td>
     %else:
     <td class="dropdown">
@@ -106,4 +128,6 @@
     %end
   </tr>
   %end
+
+  </tbody>
 </table>

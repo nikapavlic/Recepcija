@@ -390,7 +390,7 @@ def registracija_post():
                            ime=ime, priimek=priimek, rojstvo=rojstvo, nacionalnost=nacionalnost)
     repo.dodaj_uporabnik(uporabnik1)
     if request.cookies.get('rola') == 'receptor':
-        redirect(url('gost_rezervacija_get'))
+        redirect(url('pregled_uporabnikov_get'))
     else:
         redirect(url('prijava_gost_get'))
 
@@ -405,9 +405,9 @@ def rezervacije_get():
     # else:
     #    emso = request.cookies.get("uporabnisko_ime")
     cur.execute("""
-        SELECT rezervacije.id,  pricetek_bivanja, st_nocitev,odrasli,otroci, rezervirana_parcela, gost, ime, priimek FROM rezervacije
+        SELECT rezervacije.id,  pricetek_bivanja, st_nocitev,odrasli,otroci, rezervirana_parcela, gost, ime, priimek,pricetek_bivanja+st_nocitev AS odhod, pricetek_bivanja+st_nocitev  < DATE('now') AS pretecena,pricetek_bivanja+st_nocitev = DATE('now') AS gre  FROM rezervacije
         LEFT JOIN uporabnik ON uporabnik.id = rezervacije.gost
-        ORDER BY pricetek_bivanja
+        ORDER BY pricetek_bivanja;
     """)
     cur1.execute("""SELECT id_rezervacije FROM racun""")
     sz = cur1.fetchall()
@@ -433,15 +433,10 @@ def zbrisi_rezervacijo():
 @cookie_required
 @cookie_required_receptor
 def aktivne_rezervacije_get():
-    #receptor = request.get_cookie("uporabnisko_ime")
-    # if receptor == None:
-    #    template_user('receptor_prijava.html')
-    # else:
-    #    emso = request.cookies.get("uporabnisko_ime")
     cur.execute("""
-        SELECT rezervacije.id,  pricetek_bivanja, st_nocitev,odrasli,otroci, rezervirana_parcela, gost, ime, priimek FROM rezervacije
+        SELECT rezervacije.id,  pricetek_bivanja, st_nocitev,odrasli,otroci, rezervirana_parcela, gost, ime, priimek, pricetek_bivanja+st_nocitev AS odhod, pricetek_bivanja+st_nocitev  <= DATE('now') AS pretecena FROM rezervacije
         LEFT JOIN uporabnik ON uporabnik.id = rezervacije.gost
-        WHERE pricetek_bivanja <= NOW() AND NOW() <= pricetek_bivanja + st_nocitev
+        WHERE pricetek_bivanja <= DATE('now') AND DATE('now') <= pricetek_bivanja + st_nocitev
         ORDER BY pricetek_bivanja
     """)
     cur1.execute("""SELECT id_rezervacije FROM racun""")
@@ -631,7 +626,7 @@ def rezerviraj_post():
 @get('/parcele')
 @cookie_required
 @cookie_required_receptor
-def pregled_parcel(dan):
+def pregled_parcel():
     dan = request.forms.get('dan', date.today())
     cur.execute("""
                 SELECT parcela.id, uporabnik.ime, uporabnik.priimek, rezervacije.id FROM parcela
@@ -644,13 +639,30 @@ def pregled_parcel(dan):
                 ORDER BY id""")
     sz = cur.fetchall()
     seznam = [value[0] for value in sz]
-    return template_user('parcele.html', zasedene=zasedene, parcele=cur1, seznam=seznam)
+    return template_user('parcele.html', zasedene=zasedene, parcele=cur1, seznam=seznam, dan = dan)
+
 
 @post('/datum')
 def datum():
     dan = str(request.forms.dan)
-    redirect(url('pregled_parcel', dan=dan))
+    redirect(url('pregled_parcel_dan', dan=dan))
 
+@get('/parcele/<dan>')
+@cookie_required
+@cookie_required_receptor
+def pregled_parcel_dan(dan):
+    cur.execute("""
+                SELECT parcela.id, uporabnik.ime, uporabnik.priimek, rezervacije.id FROM parcela
+                LEFT JOIN rezervacije ON parcela.id = rezervacije.rezervirana_parcela
+                LEFT JOIN uporabnik ON gost = uporabnik.id
+                WHERE pricetek_bivanja <= %s AND %s <= pricetek_bivanja + st_nocitev;
+                """,[dan,dan,])
+    zasedene = cur
+    cur1.execute("""SELECT id, st_gostov FROM parcela
+                ORDER BY id""")
+    sz = cur.fetchall()
+    seznam = [value[0] for value in sz]
+    return template_user('parcele.html', zasedene=zasedene, parcele=cur1, seznam=seznam, dan=dan)
 
 
 static_dir = "./img"

@@ -3,29 +3,29 @@
 <form action="{{url('registracija_post')}}" method="post" class="row-g3 mx-2">
     <div class="col-4">
         <label for="uporabnisko_ime" class="form-label my-3">Uporabniško ime:</label>
-        <input id="uporabnisko_ime" name="uporabnisko_ime" type="text" class="form-control" />
+        <input id="uporabnisko_ime" name="uporabnisko_ime" type="text" class="form-control" required />
     </div>
     <div class="col-4">
         <label for="geslo" class="form-label my-3">Geslo:</label>
-        <input id="geslo" name="geslo" type="password" class="form-control" />
+        <input id="geslo" name="geslo" type="password" class="form-control" required/>
     </div>
     <div class="col-4">
         <label for="ime" class="form-label my-3">Ime:</label>
-        <input id="ime" name="ime" type="text" class="form-control" />
+        <input id="ime" name="ime" type="text" class="form-control" required/>
     </div>
     <div class="col-4">
         <label for="priimek" class="form-label my-3">Priimek:</label>
-        <input id="priimek" name="priimek" type="text" class="form-control" />
+        <input id="priimek" name="priimek" type="text" class="form-control" required/>
     </div>
     <div class="col-4">
         <label for="rojstvo" class="form-label my-3">Rojstvo:</label>
-        <input id="rojstvo" name="rojstvo" type="date" class="form-control" />
+        <input id="rojstvo" name="rojstvo" type="date" class="form-control" required/>
     </div>
 
     <div class="col-4">
         <label for="nacionalnost" class="form-label my-3">Nacionalnost:</label>
         <select id="nacionalnost" name="nacionalnost" type="text" class="form-control col-12"
-            aria-label="Default select example">
+            aria-label="Default select example" required>
             <option selected>Nacionalnost</option>
             %for kratica, ime in drzava:
             <option value={{kratica}}>{{ime}}({{kratica}})</option>

@@ -1,4 +1,4 @@
-% rebase('base.html', naslov='Pregled danes zasedenih parcel')
+% rebase('base.html', naslov='Pregled zasedenih parcel')
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
@@ -50,9 +50,13 @@
 </nav>
 
 <form method="POST" action="/datum">
-  <label for="dan" class="form-label my-3">Zasedenost na:</label>
-  <input id="dan" name="dan" type="date" class="form-control" />
-  <button class="btn btn-outline-dark" type="submit">Potrdi</button>
+  <label for="dan" class="form-label my-3">Zasedenost dne: {{dan}}</label>
+  <div class="row">
+    <div class="col-4">
+      <input id="dan" name="dan" type="date" class="form-control" />
+    </div>
+    <button class="btn btn-outline-dark" type="submit">Potrdi</button>
+  </div>
 </form>
 
 %for id, st_gostov in parcele:
@@ -64,12 +68,6 @@
   style="background-color: #52BE80; width: 100px; height: 100px; margin-top: 5px;">{{id}}</button>
 %end
 %end
-
-<div class="container">
-  <h3>Popover Example</h3>
-  <a href="#" data-toggle="popover" title="Popover Header" data-content="Some content inside the popover">Toggle
-    popover</a>
-</div>
 
 <script>
   $(document).ready(function () {
