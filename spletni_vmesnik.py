@@ -533,7 +533,7 @@ def izdaj_racun_post():
 # PREGLED RAČUNOV-RECEPTOR
 @get('/racuni')
 @cookie_required
-@cookie_required_receptor
+#@cookie_required_receptor
 def pregled_racunov_get():
     cur.execute("""
         SELECT racun.id AS id_racuna, racun.id_rezervacije AS id_rezervacije, receptor.ime AS ime_receptorja, receptor.priimek AS priimek_receptorja, uporabnik.ime AS ime_uporabnika , uporabnik.priimek AS priimek_uporabnika, rezervacije.odrasli AS odrasli, rezervacije.otroci AS otroci, rezervacije.st_nocitev AS st_nocitev FROM racun 
@@ -542,11 +542,15 @@ def pregled_racunov_get():
                 INNER JOIN uporabnik ON uporabnik.id = rezervacije.gost
                 ORDER BY id_racuna
     """)
-    return template_user('racuni.html', racuni=cur)
+    if request.cookies.get('rola') == 'receptor':
+        return template_user('racuni.html', racuni=cur)
+    else:
+        redirect(url('gost_racuni'))
+    
 
 @get('/rezervacija/pregled_racuna/<id>')
 @cookie_required
-@cookie_required_receptor
+#@cookie_required_receptor
 def preglej_racun_get(id):
     #kaj rabim dobit na formo: st_rezervacije, gosta, receptorja, postavke
     id_racuna = id
@@ -560,7 +564,7 @@ def preglej_racun_get(id):
 
 @post('/rezervacija/pregled_racuna/')
 @cookie_required
-@cookie_required_receptor
+#@cookie_required_receptor
 def preglej_racun_post():
     id_racuna = request.forms.id_racuna
 #    emso = request.cookies.get("id")

@@ -36,6 +36,7 @@
         <th>Število odraslih</th>
         <th>Število otrok</th>
         <th>Cena</th>
+        <th></th>
     </tr>
     %for racun, rezervacija, ime, priimek, odrasli, otroci, st_nocitev in racuni:
     <tr>
@@ -46,6 +47,11 @@
         <td>{{odrasli}}</td>
         <td>{{otroci}}</td>
         <td>{{(odrasli*12 + otroci*7)*st_nocitev}} &euro;</td>
+        <td>
+            <form method="POST" action="/rezervacija/pregled_racuna/">
+              <button class="btn btn-light btn-outline-dark" type="submit" name="id_racuna" value={{racun}}>Preglej račun</button>
+            </form>
+          </td>
         %end
     </tr>
 </table>
