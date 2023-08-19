@@ -214,12 +214,8 @@ def prijava_receptor_post():
     response.set_cookie("rola", "receptor",  path="/")
     response.set_cookie("id", str(id_receptorja),  path="/")
 
-    # redirect(url('izbira_pregleda'))
-    # , id_receptorja = id_receptorja, receptor = True)
     redirect(url('aktivne_rezervacije_get'))
-    #ck = request.get_cookie("uporabnik")
-    #rl = request.get_cookie("rola")
-    # return #str(ck)
+
 
 
 @get('/gost/prijava')
@@ -265,15 +261,12 @@ def prijava_gost_post():
 #     return template('gost_pregled.html')
 
 
-# <uporab>')                   #   POMOJE DA VSE KAR JE V TEJ FUNKCIJI ZAKOMENTIRAN SE LAHKO IZBRIŠE
+# <uporab>')                   
 @get('/gost/pregled/')
 @cookie_required
 def pregled_rezervacij_gosta():
-    #uporab = str(request.cookies.get('uporabnik'))
-    #uporab = 'petja'
     id_gosta = int(request.cookies.get("id"))
-    #cur.execute("SELECT id FROM uporabnik WHERE uporabnisko_ime = %s", [uporab])
-    #id_gosta = int(cur.fetchall()[0][0])
+    
     cur.execute("""
          SELECT pricetek_bivanja, st_nocitev, odrasli, otroci, uporabnisko_ime, rezervacije.id FROM rezervacije
          INNER JOIN uporabnik ON rezervacije.gost = uporabnik.id
@@ -281,9 +274,7 @@ def pregled_rezervacij_gosta():
          ORDER BY pricetek_bivanja
      """,
                 [id_gosta])
-    # ,id_gosta=id_gosta)
     return template_user('gost_pregled.html', rezervacija=cur)
-    # return str(id_gosta)
 
 
 @get('/gost/racuni/')
@@ -312,37 +303,48 @@ def gost_rezervacija_get():
 
 
 @post('/gost/rezervacija/')
-@cookie_required  # POMOJE DA VSE KAR JE V TEJ FUNKCIJI ZAKOMENTIRAN SE LAHKO IZBRIŠE
+@cookie_required  
 def gost_rezervacija_post():
     zacetek_nocitve = request.forms.zacetek_nocitve
-    stevilo_dni = int(request.forms.stevilo_dni)
-    stevilo_odraslih = int(request.forms.stevilo_odraslih)
-    stevilo_otrok = int(request.forms.stevilo_otrok)
+    stevilo_dni = str(request.forms.stevilo_dni)
+    stevilo_odraslih = str(request.forms.stevilo_odraslih)
+    stevilo_otrok = str(request.forms.stevilo_otrok)
 
     id_gosta = int(request.cookies.get("id"))
-    #zacetek_nocitve = str(zacetek_nocitve)
-    #zacetek_nocitve = '2023-09-01'
-    #zacetek_nocitve = zacetek_nocitve.strftime("%Y-%m-%d")
 
     # ni možna rezervacija za nazaj:
     datum= datetime.strptime(zacetek_nocitve, "%Y-%m-%d")
     danes = datetime.now()
     if datum.date() < danes.date():
-         return template_user("nova_rezervacija.html",  napaka="Ni mogoče potovati v preteklost <3")
+        return template_user("nova_rezervacija.html",  napaka="Ni mogoče potovati v preteklost <3")
     
+
+    if stevilo_dni.isdigit() and stevilo_odraslih.isdigit() and stevilo_otrok.isdigit():
+        stevilo_dni = int(request.forms.stevilo_dni)
+        stevilo_odraslih = int(request.forms.stevilo_odraslih)
+        stevilo_otrok = int(request.forms.stevilo_otrok)
+    else:
+        return template_user("nova_rezervacija.html",  napaka="Prosimo, da še enkrat vnesete podatki. Pazite, da so vnešeni pravilno.")
+    
+
+    if stevilo_odraslih + stevilo_otrok > 12:
+        return template_user("nova_rezervacija.html",  napaka="Rezervacijo lahko naredite za največ 12 oseb na eni parceli. Če želite rezervirati za več oseb, se prosimo obrnite na recepciijo kampa.")
+
+
     seznam_prostih_parcel = repo.dobi_proste_parcele(
         datum_nove=zacetek_nocitve, st_dni_nove=stevilo_dni, st_odraslih=stevilo_odraslih, st_otrok=stevilo_otrok)
+    
+    if seznam_prostih_parcel is None:
+        return template_user("nova_rezervacija.html",  napaka="Za izbrane parametre ni prostih parcel")
+
+
     prosta_parcela = seznam_prostih_parcel[0]
 
     rezervacija = rezervacije(pricetek_bivanja=zacetek_nocitve, st_nocitev=stevilo_dni,
                               odrasli=stevilo_odraslih, otroci=stevilo_otrok, rezervirana_parcela=prosta_parcela, gost=id_gosta)
 
     repo.dodaj_rezervacije(rezervacija)
-   # return zacetek_nocitve
-    # return "Uspešno dodano"
     redirect(url('pregled_rezervacij_gosta'))
-
-   # v gost=manjka id gosta, ki dela rezervacijo, to bi lahko dodale v samo metodo zgoraj, ker je rezervacija itak vezana na uporabnika, zaenkrat meče samo Petja kar na vse rezervacije ne glede na id
 
 
 @get('/dodaj_receptorja')
@@ -409,11 +411,6 @@ def registracija_post():
 @cookie_required
 @cookie_required_receptor
 def rezervacije_get():
-    #receptor = request.get_cookie("uporabnisko_ime")
-    # if receptor == None:
-    #    template_user('receptor_prijava.html')
-    # else:
-    #    emso = request.cookies.get("uporabnisko_ime")
     cur.execute("""
         SELECT rezervacije.id,  pricetek_bivanja, st_nocitev,odrasli,otroci, rezervirana_parcela, gost, ime, priimek,pricetek_bivanja+st_nocitev AS odhod, pricetek_bivanja+st_nocitev  < DATE('now') AS pretecena,pricetek_bivanja+st_nocitev = DATE('now') AS gre  FROM rezervacije
         LEFT JOIN uporabnik ON uporabnik.id = rezervacije.gost
@@ -423,7 +420,6 @@ def rezervacije_get():
     sz = cur1.fetchall()
     seznam = [value[0] for value in sz]
 
-    # return template_user('rezervacije.html', rezervacija = cur, emso=emso)
     return template_user('rezervacije.html', rezervacija=cur, poravnani=seznam)
 
 
@@ -612,18 +608,36 @@ def rezerviraj_post():
     stevilo_dni = int(request.forms.stevilo_dni)
     stevilo_odraslih = int(request.forms.stevilo_odraslih)
     stevilo_otrok = int(request.forms.stevilo_otrok)
-    #id_gosta = id
+ 
     id_gosta = request.forms.id_gosta
+
     # ni možna rezervacija za nazaj:
     datum= datetime.strptime(zacetek_nocitve, "%Y-%m-%d")
     danes = datetime.now()
     if datum.date() < danes.date():
          return template_user("nova_rezervacija.html",  napaka="Ni mogoče potovati v preteklost <3")
     
+
+    if stevilo_dni.isdigit() and stevilo_odraslih.isdigit() and stevilo_otrok.isdigit():
+        stevilo_dni = int(request.forms.stevilo_dni)
+        stevilo_odraslih = int(request.forms.stevilo_odraslih)
+        stevilo_otrok = int(request.forms.stevilo_otrok)
+    else:
+        return template_user("nova_rezervacija.html",  napaka="Prosimo, da še enkrat vnesete podatki. Pazite, da so vnešeni pravilno.")
+    
+
+    if stevilo_odraslih + stevilo_otrok > 12:
+        return template_user("nova_rezervacija.html",  napaka="Preveč oseb!")
+
+
     seznam_prostih_parcel = repo.dobi_proste_parcele(
         datum_nove=zacetek_nocitve, st_dni_nove=stevilo_dni, st_odraslih=stevilo_odraslih, st_otrok=stevilo_otrok)
-    prosta_parcela = seznam_prostih_parcel[0]
+    
+    if seznam_prostih_parcel is None:
+        return template_user("nova_rezervacija.html",  napaka="Za izbrane parametre ni prostih parcel")
 
+
+    prosta_parcela = seznam_prostih_parcel[0]
     rezervacija = rezervacije(pricetek_bivanja=zacetek_nocitve, st_nocitev=stevilo_dni,
                               odrasli=stevilo_odraslih, otroci=stevilo_otrok, rezervirana_parcela=prosta_parcela, gost=id_gosta)
 
@@ -713,9 +727,9 @@ def urejanje_rezervacije_post():
 def uredi_rezervacijo():
     id_rez = request.forms.id_rezervacije
     zacetek_nocitve = request.forms.zacetek_nocitve
-    stevilo_dni = int(request.forms.stevilo_dni)
-    stevilo_odraslih = int(request.forms.stevilo_odraslih)
-    stevilo_otrok = int(request.forms.stevilo_otrok)
+    stevilo_dni = str(request.forms.stevilo_dni)
+    stevilo_odraslih = str(request.forms.stevilo_odraslih)
+    stevilo_otrok = str(request.forms.stevilo_otrok)
  #   id_gosta = request.forms.id_gosta
     #id_parcele = request.forms.id_parcele
     # cur1.execute("SELECT gost FROM rezervacije WHERE id = %s", (id_rez,) )
@@ -726,6 +740,29 @@ def uredi_rezervacijo():
         "SELECT rezervirana_parcela FROM rezervacije WHERE id = %s", (id_rez,))
     id_parcele = cur.fetchone()
     id_parcele = id_parcele[0]
+
+
+    if stevilo_dni.isdigit() and stevilo_odraslih.isdigit() and stevilo_otrok.isdigit():
+        stevilo_dni = int(request.forms.stevilo_dni)
+        stevilo_odraslih = int(request.forms.stevilo_odraslih)
+        stevilo_otrok = int(request.forms.stevilo_otrok)
+    else:
+        sporocilo = "Bodi pozoren pri vnašanju podatkov."
+        cur.execute("""
+                SELECT rezervacije.id AS id_rezervacije, pricetek_bivanja, st_nocitev, odrasli, otroci, rezervirana_parcela, rezervacije.gost AS id_gosta, uporabnik.ime AS ime_gosta, uporabnik.priimek AS priimek_gosta FROM rezervacije
+                LEFT JOIN uporabnik ON gost = uporabnik.id
+                WHERE rezervacije.id = %s""", (id_rez,))
+        return template_user('urejanje_rezervacije.html', rezervacija=cur, napaka=sporocilo)
+        
+
+    if stevilo_odraslih + stevilo_otrok > 12:
+        sporocilo = "Preveč oseb."
+        cur.execute("""
+                SELECT rezervacije.id AS id_rezervacije, pricetek_bivanja, st_nocitev, odrasli, otroci, rezervirana_parcela, rezervacije.gost AS id_gosta, uporabnik.ime AS ime_gosta, uporabnik.priimek AS priimek_gosta FROM rezervacije
+                LEFT JOIN uporabnik ON gost = uporabnik.id
+                WHERE rezervacije.id = %s""", (id_rez,))
+        return template_user('urejanje_rezervacije.html', rezervacija=cur, napaka=sporocilo)
+        
 
     seznam_prostih_parcel = repo.dobi_proste_parcele_brez_moje_rezervacije(
         id_rezervacije=id_rez, datum_nove=zacetek_nocitve, st_dni_nove=stevilo_dni, st_odraslih=stevilo_odraslih, st_otrok=stevilo_otrok)
@@ -751,33 +788,6 @@ def uredi_rezervacijo():
 
     redirect(url('rezervacije_get'))
 
-
-# ### FILTRI? ideja
-
-# @post('/rezervacije/uporabnik')
-# @cookie_required
-# def urejanje_rezervacije_post():
-#     uporabnik = request.forms.uporabnik
-#     cur.execute("SELECT id FROM uporabnik WHERE uporabnisko_ime = %s", (uporabnik,))
-#     id_uporabnik = cur.fetchone()
-#     redirect(url('rezervacije_uporabnik_get', id=id_uporabnik))
-
-
-# @get('/rezervacije/uporabnik/<id>')
-# @cookie_required
-# def rezervacije_uporabnik_get(id):
-
-#     cur.execute("""
-#         SELECT rezervacije.id,  pricetek_bivanja, st_nocitev,odrasli,otroci, rezervirana_parcela, gost, ime, priimek FROM rezervacije
-#         LEFT JOIN uporabnik ON uporabnik.id = rezervacije.gost
-#         WHERE uporabnik.id = %s
-#         ORDER BY pricetek_bivanja
-#     """, (id,))
-#     cur1.execute("""SELECT id_rezervacije FROM racun""") #tu nevem če ga mot da so vsi racuni?
-#     sz = cur1.fetchall()
-#     seznam = [value[0] for value in sz]
-
-#     return template_user('rezervacije.html', rezervacija = cur, poravnani = seznam)
 
 conn = psycopg2.connect(database=auth.db, host=auth.host,
                         user=auth.user, password=auth.password, port=DB_PORT)

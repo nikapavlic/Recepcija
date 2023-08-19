@@ -82,3 +82,11 @@ else:
     a = 0
 
 print(a)
+
+
+vrednost = '5'
+if vrednost.isdigit():
+    pet = int(vrednost)
+else:
+    a = 0
+print(type(pet))
