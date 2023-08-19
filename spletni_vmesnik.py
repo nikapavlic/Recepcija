@@ -385,14 +385,24 @@ def registracija_post():
     priimek = request.forms.priimek
     rojstvo = request.forms.rojstvo
     nacionalnost = request.forms.nacionalnost
-
-    uporabnik1 = uporabnik(uporabnisko_ime=uporabnisko_ime, geslo=geslo,
-                           ime=ime, priimek=priimek, rojstvo=rojstvo, nacionalnost=nacionalnost)
-    repo.dodaj_uporabnik(uporabnik1)
-    if request.cookies.get('rola') == 'receptor':
-        redirect(url('pregled_uporabnikov_get'))
+    cur.execute("SELECT uporabnisko_ime FROM uporabnik")
+    sz = cur.fetchall()
+    seznam_uporabniskih_imen = [value[0] for value in sz]
+    if uporabnisko_ime in seznam_uporabniskih_imen:
+        sporocilo = "Izberi drugo uporabniško ime"
+        cur1.execute("""
+            SELECT kratica, ime
+            FROM drzava
+        """)
+        return template("registracija.html", napaka=sporocilo, drzava=cur1)
     else:
-        redirect(url('prijava_gost_get'))
+        uporabnik1 = uporabnik(uporabnisko_ime=uporabnisko_ime, geslo=geslo,
+                           ime=ime, priimek=priimek, rojstvo=rojstvo, nacionalnost=nacionalnost)
+        repo.dodaj_uporabnik(uporabnik1)
+        if request.cookies.get('rola') == 'receptor':
+            redirect(url('pregled_uporabnikov_get'))
+        else:
+            redirect(url('prijava_gost_get'))
 
 
 @get('/rezervacije')
