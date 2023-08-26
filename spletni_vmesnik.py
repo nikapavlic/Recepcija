@@ -4,7 +4,6 @@
 # uvozimo bottle.py
 import os
 from bottleext import *
-# from bottleext import get, post, run, request, template, redirect, static_file, url, response, template_user
 
 from data.model import *
 from database import Repo
@@ -41,11 +40,6 @@ def password_hash(s):
     h.update(s.encode('utf-8'))
     return h.hexdigest()
 
-# @get('/')
-# def index():
-#     redirect(url('izbira_uporabnika'))
-
-
 @get('/receptorji')
 def receptorji():
     cur.execute("""
@@ -53,11 +47,6 @@ def receptorji():
         FROM receptor
     """)
     return template_user('receptorji.html', receptorji=cur)
-
-# Način prijave:
-# @get('/izbira_uporabnika')
-# def izbira_uporabnika():
-#     return template('izbira_uporabnika.html', izbira_uporabnika=izbira_uporabnika)
 
 
 def cookie_required(f):
@@ -92,11 +81,9 @@ def cookie_required_receptor(f):
     return decorated
 
 
-
 @get('/')
 def index():
     return template('zacetna_stran.html')
-    # return 'Začetna stran'
 
 
 @post('/izracun')
@@ -112,55 +99,6 @@ def izracun():
 def static(filename):
     return static_file(filename, root='static')
 
-
-# @get('/')
-# @cookie_required
-# def index():
-#     """
-#     Domača stran je stran z cenami izdelkov.
-#     """
-
-#     izdelki = repo.cena_izdelkov()
-
-#     return template_user('izdelki.html', skip=0, take=10, izdelki=izdelki)
-
-
-# @get('/izdelki/<skip:int>/<take:int>/')
-# @cookie_required
-# def izdelki(skip, take):
-
-#     izdelki = repo.cena_izdelkov(skip=skip, take=take )
-#     return template_user('izdelki.html',skip=skip, take=take, izdelki=izdelki)
-
-# @get('/kategorije/<skip:int>/<take:int>/')
-# @cookie_required
-# def kategorije(skip, take):
-
-#     kategorije = repo.kategorije_izdelkov(skip=skip, take=take )
-#     return template_user('kategorije.html' ,skip=skip, take=take, kategorije=kategorije)
-
-
-# @post('/receptor/prijava')
-# def receptor_prijava_post():
-#     """
-#     Prijavi uporabnika v aplikacijo. Če je prijava uspešna, ustvari piškotke o uporabniku in njegovi roli.
-#     Drugače sporoči, da je prijava neuspešna.
-#     """
-#     username = request.forms.get('uporabnik')
-#     password = request.forms.get('geslo')
-
-#     if not auth.obstaja_uporabnik(username):
-#         return template("receptor_prijava.html", napaka="Uporabnik s tem imenom ne obstaja")
-
-#     prijava = auth.prijavi_uporabnika(username, password)
-#     if prijava:
-#         response.set_cookie("uporabnik", username)
-#         response.set_cookie("rola", prijava.role)
-
-#         redirect(url('index'))
-
-#     else:
-#         return template("receptor_prijava.html", napaka="Neuspešna prijava. Napačno geslo ali uporabniško ime.")
 
 @get('/odjava')
 def odjava():
@@ -179,8 +117,7 @@ def odjava():
 def prijava_receptor_get():
     return template("receptor_prijava.html")
 
-
-# POMOJE DA VSE KAR JE V TEJ FUNKCIJI ZAKOMENTIRAN SE LAHKO IZBRIŠE
+# PRIJAVA ZA RECEPTORJA
 @post('/receptor/prijava')
 def prijava_receptor_post():
     uporabnisko_ime = request.forms.get('uporabnisko_ime')
@@ -211,8 +148,7 @@ def prijava_receptor_post():
 
     redirect(url('aktivne_rezervacije_get'))
 
-
-
+# PRIJAVA ZA GOSTE
 @get('/gost/prijava')
 def prijava_gost_get():
     return template("gost_prijava.html")
@@ -246,6 +182,7 @@ def prijava_gost_post():
     response.set_cookie("id", str(id_gosta),  path="/")
 
     redirect(url('pregled_rezervacij_gosta')) 
+
              
 @get('/gost/pregled/')
 @cookie_required
@@ -277,7 +214,6 @@ def gost_racuni():
 
 
 # REZERVACIJA
-
 @get('/gost/rezervacija/')
 @cookie_required
 def gost_rezervacija_get():
@@ -329,6 +265,7 @@ def gost_rezervacija_post():
     redirect(url('pregled_rezervacij_gosta'))
 
 
+# DODAJANJE NOVIH RECEPTORJEV
 @get('/dodaj_receptorja')
 @cookie_required
 @cookie_required_receptor
@@ -364,6 +301,7 @@ def dodaj_receptorja_post():
         redirect(url('receptorji'))
 
 
+# REGISTRACIJA ZA NOVE UPORABNIKE
 @get('/registracija')
 def registracija_get():
     cur.execute("""
@@ -494,25 +432,18 @@ def ustvari_racun_get(id):
 @cookie_required_receptor
 def ustvari_racun_post():
     id_rez = request.forms.id_rez
-#    emso = request.cookies.get("id")
-#    emso = str(emso[2:-2])
-#    repo.ustvari_racun(id_rez, emso)
     redirect(url('ustvari_racun_get', id=id_rez))
-# fajn bi bilo narediti, da se gumb ugasne ko kliknemo na njega, da se računi v database nebi ponavljali, mogoče, da bi se te rezervacije zapisovale v tabelo rezervacije zgodovina in se iz tabele rezervacije brisale
 
 
 @get('/rezervacija/izdaj_racun/<id>')
 @cookie_required
 @cookie_required_receptor
 def izdaj_racun_get(id):
-    receptor = request.cookies.get("uporabnisko_ime")
-#    id_rez = request.forms.id_rez KAKO DOBIT ID REZERVACIJE NAJBOLJ ELEGANTNO
+    #receptor = request.cookies.get("uporabnisko_ime")
     id_rez = id
     cur.execute(
         "SELECT id, pricetek_bivanja, st_nocitev, odrasli, otroci FROM rezervacije WHERE id = %s", (id_rez,))
     redirect(url('pregled_racunov_get'))
-
-#    return template_user('rezervacije.html', rezervacija=cur, receptor=receptor)
 
 
 @post('/rezervacija/izdaj_racun/')
@@ -547,7 +478,6 @@ def pregled_racunov_get():
 @cookie_required
 #@cookie_required_receptor
 def preglej_racun_get(id):
-    #kaj rabim dobit na formo: st_rezervacije, gosta, receptorja, postavke
     id_racuna = id
     cur.execute("""SELECT rezervacije.id AS id_rezervacije, pricetek_bivanja, st_nocitev, odrasli, otroci, uporabnik.ime AS ime_gosta, uporabnik.priimek AS priimek_gosta, receptor.ime AS ime_receptorja, receptor.priimek AS priimek_receptorja FROM racun 
                 INNER JOIN rezervacije ON racun.id_rezervacije = rezervacije.id
@@ -562,9 +492,6 @@ def preglej_racun_get(id):
 #@cookie_required_receptor
 def preglej_racun_post():
     id_racuna = request.forms.id_racuna
-#    emso = request.cookies.get("id")
-#    emso = str(emso[2:-2])
-#    repo.ustvari_racun(id_rez, emso)
     redirect(url('preglej_racun_get', id=id_racuna))
 
 
@@ -590,13 +517,11 @@ def pregled_uporabnikov_post():
 @cookie_required
 def receptor_rezervira_get(id):
     id_gosta = id
-    #cur.execute("""SELECT id FROM uporabnik WHERE id = %s""", (id, ))
-    # id_gosta = cur.fetchone()
     return template_user("receptor_rezervira.html",id=id_gosta)
 
 
 @post('/rezerviraj')
-@cookie_required  # POMOJE DA VSE KAR JE V TEJ FUNKCIJI ZAKOMENTIRAN SE LAHKO IZBRIŠE
+@cookie_required  
 def rezerviraj_post():
     zacetek_nocitve = request.forms.zacetek_nocitve
     stevilo_dni = int(request.forms.stevilo_dni)
@@ -638,9 +563,8 @@ def rezerviraj_post():
     repo.dodaj_rezervacije(rezervacija)
     redirect(url('pregled_uporabnikov_get'))
 
+
 # PREGLED PARCEL
-
-
 @get('/parcele')
 @cookie_required
 @cookie_required_receptor
@@ -704,8 +628,6 @@ def urejanje_rezervacije_get(id):
                 WHERE rezervacije.id = %s""", (id_rez,))
     return template_user('urejanje_rezervacije.html', rezervacija=cur)
 
-   # return template_user('rezervacije.html', rezervacija=cur, receptor=receptor)
-
 
 @post('/urejanje/')
 @cookie_required
@@ -724,11 +646,6 @@ def uredi_rezervacijo():
     stevilo_dni = str(request.forms.stevilo_dni)
     stevilo_odraslih = str(request.forms.stevilo_odraslih)
     stevilo_otrok = str(request.forms.stevilo_otrok)
- #   id_gosta = request.forms.id_gosta
-    #id_parcele = request.forms.id_parcele
-    # cur1.execute("SELECT gost FROM rezervacije WHERE id = %s", (id_rez,) )
-    # id_gosta = cur.fetchone()
-    # id_gosta = id_gosta[0]
 
     cur.execute(
         "SELECT rezervirana_parcela FROM rezervacije WHERE id = %s", (id_rez,))
@@ -741,7 +658,7 @@ def uredi_rezervacijo():
         stevilo_odraslih = int(request.forms.stevilo_odraslih)
         stevilo_otrok = int(request.forms.stevilo_otrok)
     else:
-        sporocilo = "Bodi pozoren pri vnašanju podatkov."
+        sporocilo = "Bodite pozorni pri vnašanju podatkov."
         cur.execute("""
                 SELECT rezervacije.id AS id_rezervacije, pricetek_bivanja, st_nocitev, odrasli, otroci, rezervirana_parcela, rezervacije.gost AS id_gosta, uporabnik.ime AS ime_gosta, uporabnik.priimek AS priimek_gosta FROM rezervacije
                 LEFT JOIN uporabnik ON gost = uporabnik.id
@@ -749,8 +666,8 @@ def uredi_rezervacijo():
         return template_user('urejanje_rezervacije.html', rezervacija=cur, napaka=sporocilo)
         
 
-    if stevilo_odraslih + stevilo_otrok > 12:
-        sporocilo = "Preveč oseb."
+    if stevilo_odraslih + stevilo_otrok > 8:
+        sporocilo = "Presegli ste število dovoljenih oseb."
         cur.execute("""
                 SELECT rezervacije.id AS id_rezervacije, pricetek_bivanja, st_nocitev, odrasli, otroci, rezervirana_parcela, rezervacije.gost AS id_gosta, uporabnik.ime AS ime_gosta, uporabnik.priimek AS priimek_gosta FROM rezervacije
                 LEFT JOIN uporabnik ON gost = uporabnik.id
@@ -763,7 +680,6 @@ def uredi_rezervacijo():
     seznam = [value[0] for value in seznam_prostih_parcel]
 
     if seznam_prostih_parcel == []:
-        #        redirect(url('rezervacije_get'))
         sporocilo = "Za izbrane parametre ni prostih parcel"
         cur.execute("""
                 SELECT rezervacije.id AS id_rezervacije, pricetek_bivanja, st_nocitev, odrasli, otroci, rezervirana_parcela, rezervacije.gost AS id_gosta, uporabnik.ime AS ime_gosta, uporabnik.priimek AS priimek_gosta FROM rezervacije

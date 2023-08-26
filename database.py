@@ -1,9 +1,3 @@
-
-
-# rezervacije: bere, ureja, briše, naredi novo r
-# registracija gosta 
-# registracija receptorja --> vidi vse rezervacije: lahko glede na dan začetka rezervacin 
-# in glede na dan zacetek + stevilo nočitev
 from datetime import datetime as dt, timedelta
 # uvozimo psycopg2
 import psycopg2, psycopg2.extensions, psycopg2.extras
@@ -15,7 +9,6 @@ from data.model import *    #uvozimo classe tabel
 
 #from pandas import DataFrame
 #from re import sub
-
 
 import data.auth as auth  
 from datetime import date
@@ -91,30 +84,6 @@ class Repo:
         self.conn.commit()
         return rezervacije
     
-    # def dobi_proste_parcele(self, datum_nove, st_dni_nove, st_odraslih, st_otrok):
-    #     datum_zacetka_nove = dt.strptime(datum_nove, '%Y-%m-%d').date() 
-    #     #datum_zacetka_nove = datum_nove
-    #     self.cur.execute("""
-    #     SELECT DISTINCT parcela.id FROM parcela  
-    #     LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id
-    #     WHERE st_gostov >= %s""", (st_odraslih + st_otrok,))
-    #     parcele_seznam = self.cur.fetchall()
-    #     parcele_na_voljo = [parcela for seznam in parcele_seznam for parcela in seznam]
-    #     self.cur.execute("""
-    #     SELECT * FROM parcela  
-    #     LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id
-    #     WHERE st_gostov >= %s""", (st_odraslih + st_otrok,))
-    #     for stara_rezervacija in self.cur.fetchall():
-    #         if stara_rezervacija[3] == None:
-    #             continue
-    #         elif stara_rezervacija[3] <= datum_zacetka_nove and stara_rezervacija[3] + timedelta(days=stara_rezervacija[4]) > datum_zacetka_nove:
-    #             parcele_na_voljo.remove(stara_rezervacija[0])
-    #         elif stara_rezervacija[3] >= datum_zacetka_nove and datum_zacetka_nove + timedelta(days=st_dni_nove) > stara_rezervacija[3]:
-    #             parcele_na_voljo.remove(stara_rezervacija[0])
-    #         else:
-    #             continue
-    #     #return parcele_na_voljo
-    #     return datum_zacetka_nove
 
     def dobi_proste_parcele(self, datum_nove, st_dni_nove, st_odraslih, st_otrok):
         self.cur.execute(
@@ -129,10 +98,6 @@ class Repo:
         return prosta_parcela
     
     def dobi_proste_parcele_brez_moje_rezervacije(self, id_rezervacije, datum_nove, st_dni_nove, st_odraslih, st_otrok):
-        # pomozna_tabela = self.cur.execute("""SELECT rezervacije.id FROM rezervacije
-        #         EXCEPT
-        #         SELECT rezervacije.id FROM rezervacije
-        #         WHERE rezervacije.id = %s""", (id_rezervacije))
         self.cur.execute(
             """SELECT parcela.id FROM parcela
             LEFT JOIN rezervacije ON rezervacije.rezervirana_parcela = parcela.id
@@ -167,37 +132,3 @@ class Repo:
             WHERE rezervacije.id = %s""", (pricetek_bivanja, int(st_nocitev), int(odrasli), int(otroci), int(nova_parcela), int(id_rezervacije)))
         self.conn.commit()
         return
-
-    
-
-    ####
-
-    #def tabela_parcela(self, prvi_dan, st_dni, st_gostov) ->List[parcela]:
-        # funkcija izpiše seznam vseh parcel, katere bi bile primerne za željeno rezervacijo = st_gostov & izbrane dni
-
-        # zdruziti je treba tabelo rezervacij in tabelo parcel --> dobimo proste parcele
-        # nato vzamemo parcele katere so primerne za dano st_gostov
-
-
-
-            # IDK?? 
-        #     self.cur.execute("""
-        #     SELECT * FROM parcele
-        #     WHERE NOT EXISTS(
-        #         SELECT 
-        #     )
-        #     WHERE st_gostov = %s """, (prvi_dan, st_dni, st_gostov))
-
-
-        # return [parcela(id, st_gostov) for (id, st_gostov) in self.cur.fetchall()]
-
-        
-        # datum_zacetka_stare, st_dni_stare, datum_zacetka_nove, st_dni_nove
-
-        # if datum_zacetka_stare <= datum_zacetka_nove and datum_zacetka_stare + st_dni_stare > datum_zacetka_nove
-        #   parcela je zasedena
-        # elseif datum_zacetka_stare >= datum_zacetka_nove and datum_zacetka_nove + st_dni_nove > datum_zacetka_stare
-        #   parcela je zasedena
-        # else
-        #   parcela prosta
-
