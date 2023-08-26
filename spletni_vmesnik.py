@@ -184,8 +184,8 @@ def prijava_receptor_get():
 @post('/receptor/prijava')
 def prijava_receptor_post():
     uporabnisko_ime = request.forms.get('uporabnisko_ime')
-    #geslo = password_hash(request.forms.get('geslo'))
-    geslo = request.forms.get('geslo')
+    geslo = password_hash(request.forms.get('geslo'))
+    #geslo = request.forms.get('geslo')
     if uporabnisko_ime is None or geslo is None:
         sporocilo = "Vnesi uporabniško ime in geslo"
         return template("receptor_prijava.html", napaka=sporocilo)
@@ -197,19 +197,14 @@ def prijava_receptor_post():
         id_receptorja = cur.execute(
             "SELECT emso FROM receptor WHERE uporabnisko_ime = %s", [uporabnisko_ime])
         id_receptorja = cur.fetchall()[0]
-    except:
+    except TypeError:
         hashBaza = None
     if hashBaza is None:
-        #        redirect(url('prijava_receptor_get'))
         sporocilo = "Napačno uporabniško ime"
         return template("receptor_prijava.html", napaka=sporocilo)
     if geslo != hashBaza:
-      #  nastaviSporocilo('Nekaj je šlo narobe.')
-        #        redirect(url('prijava_receptor_get'))
         sporocilo = "Napačno geslo"
         return template("receptor_prijava.html", napaka=sporocilo)
-
-    # secret = "secret_value",, httponly = True)
     response.set_cookie("uporabnisko_ime", uporabnisko_ime,  path="/")
     response.set_cookie("rola", "receptor",  path="/")
     response.set_cookie("id", str(id_receptorja),  path="/")
@@ -238,30 +233,20 @@ def prijava_gost_post():
         cur.execute("SELECT id FROM uporabnik WHERE uporabnisko_ime = %s", [
                     uporabnisko_ime])
         id_gosta = cur.fetchall()[0][0]
-    except:
+    except TypeError:
         hashBaza = None
     if hashBaza is None:
         sporocilo = "Napačno uporabniško ime"
         return template("gost_prijava.html", napaka=sporocilo)
     if geslo != hashBaza:
-        #nastaviSporocilo('Nekaj je šlo narobe.')
-        #         redirect(url('prijava_gost_get'))
         sporocilo = "Napačno geslo"
         return template("gost_prijava.html", napaka=sporocilo)
-    # secret = "secret_value",, httponly = True)
     response.set_cookie("uporabnisko_ime", uporabnisko_ime,  path="/")
     response.set_cookie("rola", "gost",  path="/")
     response.set_cookie("id", str(id_gosta),  path="/")
 
-#    redirect(url('pregled_rezervacij_gosta'))
-    redirect(url('pregled_rezervacij_gosta'))  # , id_gosta=id_gosta))
-
-# @get('/gost/pregled')
-# def pregled_rezervacij_gosta():
-#     return template('gost_pregled.html')
-
-
-# <uporab>')                   
+    redirect(url('pregled_rezervacij_gosta')) 
+             
 @get('/gost/pregled/')
 @cookie_required
 def pregled_rezervacij_gosta():
@@ -292,13 +277,10 @@ def gost_racuni():
 
 
 # REZERVACIJA
-# treba še popraviti
 
 @get('/gost/rezervacija/')
 @cookie_required
 def gost_rezervacija_get():
-    #cur.execute("""SELECT id FROM uporabnik WHERE id = %s""", (id, ))
-    # id_gosta = cur.fetchone()
     return template("nova_rezervacija.html")
 
 
@@ -364,10 +346,22 @@ def dodaj_receptorja_post():
     ime = request.forms.ime
     priimek = request.forms.priimek
 
-    receptor1 = receptor(emso=emso, uporabnisko_ime=uporabnisko_ime,
+    cur.execute("""
+        SELECT emso 
+        FROM receptor
+    """)
+    sz = cur.fetchall()
+    seznam_emso = [value[0] for value in sz]
+
+    if str(emso) in seznam_emso:
+        sporocilo = "Uporabnik s to številko EMŠO že obstaja"
+        return template_user('nov_receptor.html', napaka=sporocilo)
+
+    else:
+        receptor1 = receptor(emso=emso, uporabnisko_ime=uporabnisko_ime,
                          geslo=geslo, ime=ime, priimek=priimek)
-    repo.dodaj_receptor(receptor1)
-    redirect(url('receptorji'))
+        repo.dodaj_receptor(receptor1)
+        redirect(url('receptorji'))
 
 
 @get('/registracija')
@@ -573,8 +567,8 @@ def preglej_racun_post():
 #    repo.ustvari_racun(id_rez, emso)
     redirect(url('preglej_racun_get', id=id_racuna))
 
-# PREGLED UPORABNIKOV
 
+# PREGLED UPORABNIKOV
 
 @get('/uporabniki')
 @cookie_required
@@ -626,7 +620,7 @@ def rezerviraj_post():
         return template_user("nova_rezervacija.html",  napaka="Prosimo, da še enkrat vnesete podatki. Pazite, da so vnešeni pravilno.")
     
 
-    if stevilo_odraslih + stevilo_otrok > 12:
+    if stevilo_odraslih + stevilo_otrok > 8:
         return template_user("nova_rezervacija.html",  napaka="Preveč oseb!")
 
 
