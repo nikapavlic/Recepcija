@@ -14,4 +14,4 @@ Kot vodja imamo nekaj več pravic kot ostali receptorji. Samo vodja lahko dodaja
 Kot gost si lahko ustvarimo uporabniški račun in v svojem profilu ustvarjamo rezervacije, jih urejamo, brišemo in dostopamo do že izdanih računov.
 
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/nikapavlic/Recepcija/main?urlpath=proxy%2F8080)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/nikapavlic/Recepcija.git/main?urlpath=proxy%2F8080)
