@@ -524,9 +524,9 @@ def receptor_rezervira_get(id):
 @cookie_required  
 def rezerviraj_post():
     zacetek_nocitve = request.forms.zacetek_nocitve
-    stevilo_dni = int(request.forms.stevilo_dni)
-    stevilo_odraslih = int(request.forms.stevilo_odraslih)
-    stevilo_otrok = int(request.forms.stevilo_otrok)
+    stevilo_dni = str(request.forms.stevilo_dni)
+    stevilo_odraslih = str(request.forms.stevilo_odraslih)
+    stevilo_otrok = str(request.forms.stevilo_otrok)
  
     id_gosta = request.forms.id_gosta
 
